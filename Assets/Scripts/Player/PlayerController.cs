@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
     private Rigidbody2D playerRb;
     private Vector2 movement;
     private Animator animator;
 
-    public float dashSpeed; // Velocidad del dash
-    public float dashDuration; // Duracion del dash en segundos
-    public float dashCooldown; // Tiempo de recarga del dash en segundos
+    public float moveSpeed;
+    public float dashSpeed;
+    public float dashDuration;
+    public float dashCooldown;
 
-    private bool isDashing = false; // Para saber si esta en dash
-    private float dashTime; // Temporizador para la duracion del dash
-    private float nextDashTime = 0f; // Tiempo hasta el proximo dash permitido
+    private bool isDashing = false;
+    private float dashTime;
+    private float nextDashTime = 0f;
 
     void Start()
     {
@@ -23,53 +23,68 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    /* void Update ()
-    {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
-        movement = new Vector2(moveX, moveY).normalized;
-        animator.SetFloat("X", movement.x);
-        animator.SetFloat("Y", movement.y);
-        animator.SetFloat("Speed", movement.sqrMagnitude);
-
-
-    } */
-
     void Update()
     {
+        // Leer entradas de movimiento
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
         movement = new Vector2(moveX, moveY).normalized;
 
-        // Actualiza los parámetros del animator
+        // Actualizar los parámetros del animator
         animator.SetFloat("X", movement.x);
         animator.SetFloat("Y", movement.y);
         animator.SetFloat("Speed", movement.sqrMagnitude);
 
-        // Cambia la animación Idle basado en la dirección de movimiento
+        // Cambiar la animación Idle basada en la dirección de movimiento
         if (movement.sqrMagnitude == 0)
         {
             if (animator.GetFloat("X") > 0)
             {
-                animator.Play("IdleRight"); // Cambia a tu animación Idle hacia la derecha
+                animator.Play("IdleRight");
             }
             else if (animator.GetFloat("X") < 0)
             {
-                animator.Play("IdleLeft"); // Cambia a tu animación Idle hacia la izquierda
+                animator.Play("IdleLeft");
             }
             else if (animator.GetFloat("Y") > 0)
             {
-                animator.Play("IdleUp"); // Cambia a tu animación Idle hacia arriba
+                animator.Play("IdleUp");
             }
             else if (animator.GetFloat("Y") < 0)
             {
-                animator.Play("IdleDown"); // Cambia a tu animación Idle hacia abajo
+                animator.Play("IdleDown");
             }
+        }
+
+        // Activar el dash si se presiona la tecla espacio y el dash no está en cooldown
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= nextDashTime)
+        {
+            isDashing = true;
+            dashTime = dashDuration;
+            nextDashTime = Time.time + dashCooldown;
         }
     }
 
     private void FixedUpdate()
     {
-        playerRb.MovePosition(playerRb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        // Si el jugador está dashing, moverlo con velocidad de dash
+        if (isDashing)
+        {
+            // Usamos MovePosition para mover al jugador durante el dash
+            playerRb.MovePosition(playerRb.position + movement * dashSpeed * Time.fixedDeltaTime);
+
+            dashTime -= Time.fixedDeltaTime;
+
+            // Finalizar el dash si se acaba el tiempo
+            if (dashTime <= 0)
+            {
+                isDashing = false;
+            }
+        }
+        else
+        {
+            // Mover al jugador normalmente con velocidad de movimiento
+            playerRb.MovePosition(playerRb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        }
     }
 }
