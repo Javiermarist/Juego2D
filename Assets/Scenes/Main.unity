@@ -7053,11 +7053,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1342532204}
   - component: {fileID: 1342532205}
-  - component: {fileID: 1342532209}
-  - component: {fileID: 1342532208}
   - component: {fileID: 1342532207}
+  - component: {fileID: 1342532208}
+  - component: {fileID: 1342532210}
   - component: {fileID: 1342532206}
-  m_Layer: 0
+  - component: {fileID: 1342532211}
+  m_Layer: 7
   m_Name: Zombie2
   m_TagString: Enemie
   m_Icon: {fileID: 0}
@@ -7160,7 +7161,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -7215,7 +7216,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &1342532208
 MonoBehaviour:
@@ -7233,7 +7234,7 @@ MonoBehaviour:
   moveDistance: 10
   moveSpeed: 8
   pauseTime: 1
---- !u!114 &1342532209
+--- !u!114 &1342532210
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7246,6 +7247,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
+--- !u!61 &1342532211
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342532203}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.054469347, y: -0.027898788}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.7954078, y: 0.9654584}
+  m_EdgeRadius: 0
 --- !u!1 &1503770335
 GameObject:
   m_ObjectHideFlags: 0
@@ -7255,7 +7301,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1503770336}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemies
   m_TagString: Enemie
   m_Icon: {fileID: 0}
@@ -7293,7 +7339,8 @@ GameObject:
   - component: {fileID: 1557514380}
   - component: {fileID: 1557514379}
   - component: {fileID: 1557514381}
-  m_Layer: 0
+  - component: {fileID: 1557514382}
+  m_Layer: 7
   m_Name: Zombie1
   m_TagString: Enemie
   m_Icon: {fileID: 0}
@@ -7477,6 +7524,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
+--- !u!61 &1557514382
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557514375}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.05638933, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.8016653, y: 1.0155559}
+  m_EdgeRadius: 0
 --- !u!1001 &4242368513496957884
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7497,13 +7589,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2182577623846836056, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182577623846836056, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+        type: 3}
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2614826197087852756, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2614826197087852756, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+        type: 3}
       propertyPath: m_SortingOrder
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2614826197087852756, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1869315837
       objectReference: {fileID: 0}
     - target: {fileID: 4169306205494917443, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
@@ -7560,6 +7667,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6303140715489525514, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6451118443195552089, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
       propertyPath: m_BodyType
@@ -7574,6 +7686,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CollisionDetection
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9095217280802065866, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

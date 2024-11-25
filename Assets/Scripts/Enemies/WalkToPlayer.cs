@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class WalkToPlayer : MonoBehaviour
 {
-    public Transform player;       // Referencia al jugador
-    public float moveDistance = 5f; // Distancia que recorre en cada ataque
-    public float moveSpeed = 2f;    // Velocidad de movimiento
-    public float pauseTime = 1f;    // Tiempo que espera antes de moverse de nuevo
+    public Transform player;
+    public float moveDistance;
+    public float moveSpeed;
+    public float pauseTime;
 
-    private Vector3 targetPosition; // Posición actual a la que se dirige
-    private bool isMoving = false;  // Si el enemigo está en movimiento
-    private bool isPaused = false;  // Si el enemigo está en pausa
-    private bool isStopped = false; // Si el enemigo ha sido detenido por una pared
+    private Vector3 targetPosition;
+    private bool isMoving = false;
+    private bool isPaused = false;
+    private bool isStopped = false;
 
     private void Update()
     {
-        if (!isPaused && !isMoving && !isStopped)
+        if (!isPaused && !isMoving)
         {
             // Calcula la posición objetivo
             Vector3 direction = (player.position - transform.position).normalized;
@@ -25,6 +25,16 @@ public class WalkToPlayer : MonoBehaviour
             // Inicia el movimiento
             isMoving = true;
             StartCoroutine(MoveToTarget());
+
+            // Ajusta la dirección en la que mira el zombie
+            if (direction.x > 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1); // Mirar a la derecha
+            }
+            else if (direction.x < 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1); // Mirar a la izquierda
+            }
         }
     }
 
@@ -45,13 +55,23 @@ public class WalkToPlayer : MonoBehaviour
             yield return new WaitForSeconds(pauseTime);
             isPaused = false;
         }
+        else
+        {
+            yield return new WaitForSeconds(pauseTime);
+            isStopped = false;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Wall"))
         {
-            isStopped = true; // Detener el movimiento
+            StopMoving();
+        }
+
+        if (collision.collider.CompareTag("Player"))
+        {
+            StopMoving();
         }
     }
 
@@ -59,7 +79,20 @@ public class WalkToPlayer : MonoBehaviour
     {
         if (collision.collider.CompareTag("Wall"))
         {
-            isStopped = false; // Reanudar el movimiento cuando ya no está en contacto con la pared
+            StartCoroutine(ResumeAfterPause(1f));
         }
+    }
+
+    private IEnumerator ResumeAfterPause(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        isStopped = false;
+    }
+
+    private void StopMoving()
+    {
+        isMoving = false;
+        isStopped = true;
+        StopAllCoroutines();
     }
 }

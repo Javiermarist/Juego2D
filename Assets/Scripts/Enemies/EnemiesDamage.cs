@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemiesDamage : MonoBehaviour
 {
     private PlayerInfo playerInfo;
-
     public int damage = 1;
 
     void Start()
@@ -16,20 +14,28 @@ public class EnemiesDamage : MonoBehaviour
         {
             playerInfo = player.GetComponent<PlayerInfo>();
         }
+        else
+        {
+            Debug.LogError("No se encontró al jugador");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        // Debugging extra
+        Debug.Log("OnTriggerEnter2D Detectado con: " + other.gameObject.name);
+
+        if (other.CompareTag("Player"))
         {
+            Debug.Log("El jugador ha tocado al enemigo");
             if (playerInfo != null)
             {
                 playerInfo.health -= damage;
-                Debug.Log("You have lost 1 hp!");
+                Debug.Log("Daño infligido. Salud del jugador: " + playerInfo.health);
             }
             else
             {
-                Debug.LogError("PlayerInfo no ha sido asignado.");
+                Debug.LogError("No se encontró el componente PlayerInfo");
             }
         }
     }
