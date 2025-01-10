@@ -32,7 +32,8 @@ public class EnemiesDamage : MonoBehaviour
             {
                 playerInfo.health -= damage;
                 Debug.Log("Daño infligido. Salud del jugador: " + playerInfo.health);
-                gameObject.SetActive(false);
+                //gameObject.SetActive(false);
+                Destroy(gameObject);
             }
             else
             {

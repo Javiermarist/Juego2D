@@ -160,7 +160,7 @@ Transform:
   m_GameObject: {fileID: 553292620}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.98, y: -2.11, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: 844440796}
   - component: {fileID: 844440795}
   - component: {fileID: 844440794}
-  m_Layer: 20
+  m_Layer: 8
   m_Name: TilemapBarrier
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -2344,7 +2344,7 @@ GameObject:
   - component: {fileID: 1261594986}
   - component: {fileID: 1261594988}
   - component: {fileID: 1261594987}
-  m_Layer: 20
+  m_Layer: 0
   m_Name: TilemapBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7058,8 +7058,9 @@ GameObject:
   - component: {fileID: 1342532210}
   - component: {fileID: 1342532206}
   - component: {fileID: 1342532211}
+  - component: {fileID: 1342532212}
   m_Layer: 7
-  m_Name: Zombie2
+  m_Name: Skeleton1
   m_TagString: Enemie
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7121,7 +7122,7 @@ SpriteRenderer:
   m_SortingLayerID: -1869315837
   m_SortingLayer: 1
   m_SortingOrder: 10
-  m_Sprite: {fileID: -493647738, guid: 3ed17cd15a4f9884586fc0b39e5dd1fe, type: 3}
+  m_Sprite: {fileID: 1782705385, guid: e5f1a0904573f3242bb4cf656e39e6e6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -7292,6 +7293,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.7954078, y: 0.9654584}
   m_EdgeRadius: 0
+--- !u!95 &1342532212
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342532203}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 51ef2cac54915054b8ae49c870cac65d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1503770335
 GameObject:
   m_ObjectHideFlags: 0
@@ -7340,6 +7362,7 @@ GameObject:
   - component: {fileID: 1557514379}
   - component: {fileID: 1557514381}
   - component: {fileID: 1557514382}
+  - component: {fileID: 1557514383}
   m_Layer: 7
   m_Name: Zombie1
   m_TagString: Enemie
@@ -7435,7 +7458,7 @@ Transform:
   m_GameObject: {fileID: 1557514375}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.65, y: -3.81, z: 0.013525856}
+  m_LocalPosition: {x: 0.11, y: -3.81, z: 0.013525856}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7569,6 +7592,71 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.8016653, y: 1.0155559}
   m_EdgeRadius: 0
+--- !u!95 &1557514383
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557514375}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 593934d4b3ae5ff4da58edea5af15c17, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &1809138291
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1809138293}
+  - component: {fileID: 1809138292}
+  m_Layer: 0
+  m_Name: Game Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1809138292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809138291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8865c0db999897342a875920df0cdd79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1809138293
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809138291}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.5269668, y: -0.4731658, z: -10.00496}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4242368513496957884
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7615,12 +7703,12 @@ PrefabInstance:
     - target: {fileID: 4169306205494917443, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.95
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4169306205494917443, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.93
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4169306205494917443, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
         type: 3}
@@ -7708,3 +7796,4 @@ SceneRoots:
   - {fileID: 4242368513496957884}
   - {fileID: 553292622}
   - {fileID: 1503770336}
+  - {fileID: 1809138293}

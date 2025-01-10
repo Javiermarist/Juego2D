@@ -5,14 +5,25 @@ using UnityEngine;
 public class WalkToPlayer : MonoBehaviour
 {
     public Transform player;
+    private Rigidbody2D rb;
+    private Animator animator;
+
     public float moveDistance;
     public float moveSpeed;
     public float pauseTime;
 
     private Vector3 targetPosition;
+    private Vector3 lastPosition; // Para calcular la velocidad
     private bool isMoving = false;
     private bool isPaused = false;
     private bool isStopped = false;
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        lastPosition = transform.position; // Inicializa la posición anterior
+    }
 
     private void Update()
     {
@@ -36,6 +47,13 @@ public class WalkToPlayer : MonoBehaviour
                 transform.localScale = new Vector3(-1, 1, 1); // Mirar a la izquierda
             }
         }
+
+        // Calcula la velocidad actual
+        float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
+        animator.SetFloat("Speed", speed);
+
+        // Actualiza la última posición
+        lastPosition = transform.position;
     }
 
     private IEnumerator MoveToTarget()

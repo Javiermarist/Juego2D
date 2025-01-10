@@ -6,8 +6,10 @@ using UnityEngine;
 public class FollowIA : MonoBehaviour
 {
     [SerializeField] private Transform player;
-    [SerializeField] private float speed;
     private Rigidbody2D rb;
+    private Animator animator;
+
+    [SerializeField] private float speed;
     private bool isFacingRight = true;
     private bool isStopped = false;
 
@@ -30,6 +32,8 @@ public class FollowIA : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
         }
+
+        animator.SetFloat("Speed", rb.velocity.magnitude);
     }
 
     private void Flip(bool isPlayerRight)
