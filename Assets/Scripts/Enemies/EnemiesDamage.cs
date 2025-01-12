@@ -16,28 +16,24 @@ public class EnemiesDamage : MonoBehaviour
         }
         else
         {
-            Debug.LogError("No se encontró al jugador");
+            Debug.LogError("No se encontro al jugador");
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Debugging extra
-        Debug.Log("OnTriggerEnter2D Detectado con: " + other.gameObject.name);
-
         if (other.CompareTag("Player"))
         {
             Debug.Log("El jugador ha tocado al enemigo");
             if (playerInfo != null)
             {
                 playerInfo.health -= damage;
-                Debug.Log("Daño infligido. Salud del jugador: " + playerInfo.health);
-                //gameObject.SetActive(false);
+                Debug.Log("DaÃ±o recibido. Salud del jugador: " + playerInfo.health);
                 Destroy(gameObject);
             }
             else
             {
-                Debug.LogError("No se encontró el componente PlayerInfo");
+                Debug.LogError("No se encontro el componente PlayerInfo");
             }
         }
     }

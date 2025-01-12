@@ -32,8 +32,6 @@ public class FollowIA : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
         }
-
-        animator.SetFloat("Speed", rb.velocity.magnitude);
     }
 
     private void Flip(bool isPlayerRight)

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Variables
+
     private Rigidbody2D playerRb;
     private Vector2 movement;
     private Animator animator;
@@ -17,18 +19,30 @@ public class PlayerController : MonoBehaviour
     private float dashTime;
     private float nextDashTime = 0f;
 
+    #endregion
+
     void Start()
     {
+        #region Component references
+
         playerRb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
+        #endregion
     }
 
     void Update()
     {
+        #region Movement keys
+
         // Leer entradas de movimiento
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
         movement = new Vector2(moveX, moveY).normalized;
+
+        #endregion
+
+        #region Animations
 
         // Actualizar los parámetros del animator
         animator.SetFloat("X", movement.x);
@@ -56,6 +70,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        #endregion
+
+        #region Dash usage
+
         // Activar el dash si se presiona la tecla espacio y el dash no está en cooldown
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= nextDashTime)
         {
@@ -63,10 +81,14 @@ public class PlayerController : MonoBehaviour
             dashTime = dashDuration;
             nextDashTime = Time.time + dashCooldown;
         }
+
+        #endregion
     }
 
     private void FixedUpdate()
     {
+        #region Dash
+
         // Si el jugador está dashing, moverlo con velocidad de dash
         if (isDashing)
         {
@@ -86,5 +108,7 @@ public class PlayerController : MonoBehaviour
             // Mover al jugador normalmente con velocidad de movimiento
             playerRb.MovePosition(playerRb.position + movement * moveSpeed * Time.fixedDeltaTime);
         }
+
+        #endregion
     }
 }

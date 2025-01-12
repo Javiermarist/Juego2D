@@ -6,9 +6,9 @@ TagManager:
   tags:
   - Ladder
   - Platform
-  - Enemie
   - Wall
   - Floor
+  - Enemy
   layers:
   - Default
   - TransparentFX
