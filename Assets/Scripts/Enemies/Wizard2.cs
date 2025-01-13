@@ -1,7 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Wizard : MonoBehaviour
+public class Wizard2 : MonoBehaviour
 {
     #region Variables
 
@@ -15,8 +16,10 @@ public class Wizard : MonoBehaviour
     public Transform attackPoint;
 
     public float attackInterval;
-    public float proyectileSpeed;
+    public float projectileSpeed;
     public int damage;
+    public int numberOfProjectiles = 5; // Número de proyectiles
+    public float spreadAngle = 40f; // Ángulo de dispersión total
 
     #endregion
 
@@ -40,7 +43,7 @@ public class Wizard : MonoBehaviour
         }
         else
         {
-            Debug.LogError("No se encontrÃ³ al jugador.");
+            Debug.LogError("No se encontró al jugador.");
         }
 
         #endregion
@@ -87,40 +90,60 @@ public class Wizard : MonoBehaviour
     {
         while (true)
         {
-            GameObject projectile = InstantiateProjectile(playerTransform.position);
+            SpawnProjectiles(playerTransform.position);
             yield return new WaitForSeconds(attackInterval);
-            Destroy(projectile);
         }
     }
 
     #endregion
 
-    #region Creates Attack GameObject
+    #region Creates Multiple Projectiles
 
-    GameObject InstantiateProjectile(Vector2 playerPosition)
+    void SpawnProjectiles(Vector2 playerPosition)
     {
         if (projectilePrefab != null && attackPoint != null)
         {
-            GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
+            float angleStep = spreadAngle / (numberOfProjectiles - 1); // Espaciado entre los proyectiles
+            float startAngle = -spreadAngle / 2; // Ángulo inicial para el primer proyectil
 
-            Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
-
-            Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            for (int i = 0; i < numberOfProjectiles; i++)
             {
-                rb.velocity = direction * proyectileSpeed;
+                float currentAngle = startAngle + (angleStep * i); // Ángulo para el proyectil actual
+                InstantiateProjectile(playerPosition, currentAngle);
             }
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            projectile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
-
-            return projectile;
         }
         else
         {
             Debug.LogWarning("Prefab del proyectil o punto de ataque no asignado.");
-            return null;
         }
+    }
+
+    GameObject InstantiateProjectile(Vector2 playerPosition, float additionalAngle)
+    {
+        GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
+
+        // Calcular dirección base hacia el jugador
+        Vector2 baseDirection = (playerPosition - (Vector2)attackPoint.position).normalized;
+
+        // Ajustar el ángulo de la dirección
+        float baseAngle = Mathf.Atan2(baseDirection.y, baseDirection.x) * Mathf.Rad2Deg;
+        float adjustedAngle = baseAngle + additionalAngle;
+
+        Vector2 direction = new Vector2(
+            Mathf.Cos(adjustedAngle * Mathf.Deg2Rad),
+            Mathf.Sin(adjustedAngle * Mathf.Deg2Rad)
+        );
+
+        Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.velocity = direction * projectileSpeed;
+        }
+
+        // Rotar el proyectil para que apunte en la dirección correcta
+        projectile.transform.rotation = Quaternion.Euler(0, 0, adjustedAngle - 90);
+
+        return projectile;
     }
 
     #endregion
@@ -155,11 +178,11 @@ public class Wizard : MonoBehaviour
             if (playerInfo != null)
             {
                 playerInfo.health -= damage;
-                Debug.Log($"DaÃ±o infligido al jugador. Salud restante: {playerInfo.health}");
+                Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
             }
             else
             {
-                Debug.LogError("No se encontrÃ³ el script PlayerInfo en el jugador.");
+                Debug.LogError("No se encontró el script PlayerInfo en el jugador.");
             }
 
             StartCoroutine(FadeOutAndDestroy());
