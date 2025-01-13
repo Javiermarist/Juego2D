@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 759369785176283430}
   - component: {fileID: 8741531557622069407}
   - component: {fileID: 6285679150151862565}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fireball
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -122,6 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
+  deathAnimation: {fileID: 0}
 --- !u!50 &8741531557622069407
 Rigidbody2D:
   serializedVersion: 4

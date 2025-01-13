@@ -9,14 +9,13 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRb;
     private Vector2 movement;
     private Animator animator;
+    private LayerMask originalLayer;
 
     public float moveSpeed;
-    public float dashSpeed;
-    public float dashDuration;
+    public float dashDistance;  // Cambié 'dashSpeed' por 'dashDistance'
     public float dashCooldown;
 
     private bool isDashing = false;
-    private float dashTime;
     private float nextDashTime = 0f;
 
     #endregion
@@ -28,6 +27,8 @@ public class PlayerController : MonoBehaviour
         playerRb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
+        originalLayer = gameObject.layer;
+
         #endregion
     }
 
@@ -35,7 +36,6 @@ public class PlayerController : MonoBehaviour
     {
         #region Movement keys
 
-        // Leer entradas de movimiento
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
         movement = new Vector2(moveX, moveY).normalized;
@@ -44,12 +44,10 @@ public class PlayerController : MonoBehaviour
 
         #region Animations
 
-        // Actualizar los parÃ¡metros del animator
         animator.SetFloat("X", movement.x);
         animator.SetFloat("Y", movement.y);
         animator.SetFloat("Speed", movement.sqrMagnitude);
 
-        // Cambiar la animaciÃ³n Idle basada en la direcciÃ³n de movimiento
         if (movement.sqrMagnitude == 0)
         {
             if (animator.GetFloat("X") > 0)
@@ -74,12 +72,14 @@ public class PlayerController : MonoBehaviour
 
         #region Dash usage
 
-        // Activar el dash si se presiona la tecla espacio y el dash no estÃ¡ en cooldown
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= nextDashTime)
         {
             isDashing = true;
-            dashTime = dashDuration;
             nextDashTime = Time.time + dashCooldown;
+            GetComponent<BoxCollider2D>().excludeLayers = 1 << 7;
+            GetComponent<Rigidbody2D>().excludeLayers = 1 << 7;
+
+            Debug.Log("Dash. Eres inmortal");
         }
 
         #endregion
@@ -89,23 +89,34 @@ public class PlayerController : MonoBehaviour
     {
         #region Dash
 
-        // Si el jugador estÃ¡ dashing, moverlo con velocidad de dash
         if (isDashing)
         {
-            // Usamos MovePosition para mover al jugador durante el dash
-            playerRb.MovePosition(playerRb.position + movement * dashSpeed * Time.fixedDeltaTime);
+            // Calcular la dirección de movimiento según la dirección de movimiento
+            Vector2 dashDirection = movement;
 
-            dashTime -= Time.fixedDeltaTime;
+            // Realizar un raycast en la dirección que el jugador está mirando
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, dashDirection, dashDistance);
 
-            // Finalizar el dash si se acaba el tiempo
-            if (dashTime <= 0)
+            if (hit.collider != null)
             {
-                isDashing = false;
+                // Si el raycast golpea algo (por ejemplo, un muro), teletransporta al jugador al punto de colisión
+                playerRb.position = hit.point;
             }
+            else
+            {
+                // Si no hay colisión, teletransporta al jugador a 5 unidades en esa dirección
+                playerRb.position += dashDirection * dashDistance;
+            }
+
+            isDashing = false; // Termina el dash después del teletransporte
+
+            GetComponent<BoxCollider2D>().excludeLayers = 0;
+            GetComponent<Rigidbody2D>().excludeLayers = 0;
+
+            Debug.Log("Dash terminado. Ya no eres inmortal");
         }
         else
         {
-            // Mover al jugador normalmente con velocidad de movimiento
             playerRb.MovePosition(playerRb.position + movement * moveSpeed * Time.fixedDeltaTime);
         }
 
