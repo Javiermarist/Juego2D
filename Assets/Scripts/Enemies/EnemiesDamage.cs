@@ -7,8 +7,13 @@ public class EnemiesDamage : MonoBehaviour
     private PlayerInfo playerInfo;
     public int damage = 1;
 
+    private Animator animator;
+    public AnimationClip deathAnimation;
+
     void Start()
     {
+        animator = GetComponent<Animator>();
+
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
@@ -29,6 +34,9 @@ public class EnemiesDamage : MonoBehaviour
             {
                 playerInfo.health -= damage;
                 Debug.Log("Daño recibido. Salud del jugador: " + playerInfo.health);
+
+                
+
                 Destroy(gameObject);
             }
             else
@@ -37,4 +45,6 @@ public class EnemiesDamage : MonoBehaviour
             }
         }
     }
+
+    
 }

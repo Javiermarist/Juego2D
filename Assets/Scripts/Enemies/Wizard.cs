@@ -1,43 +1,60 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Wizard : MonoBehaviour
 {
-    // Prefab del proyectil
-    public GameObject projectilePrefab;
+    #region Variables
 
-    // Punto de ataque desde el cual se instanciarán los proyectiles
+    private Coroutine attackCoroutine;
+    private Transform playerTransform;
+    private SpriteRenderer wizardSpriteRenderer;
+    private PlayerInfo playerInfo;
+    private Animator animator;
+    private Collider2D wizardCollider;
+    public GameObject projectilePrefab;
     public Transform attackPoint;
 
-    // Intervalo entre ataques
-    public float attackInterval = 2f;
-    public float speed;  // Velocidad del proyectil
+    public float attackInterval;
+    public float proyectileSpeed;
+    public int damage;
 
-    private Coroutine attackCoroutine;  // Variable para controlar la coroutine
-
-    private Transform playerTransform;  // Referencia al Transform del jugador
-
-    private SpriteRenderer wizardSpriteRenderer; // Referencia al SpriteRenderer para el volteo
+    #endregion
 
     void Start()
     {
+        #region Check Components
+
         wizardSpriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+        wizardCollider = GetComponent<Collider2D>();
+
         if (wizardSpriteRenderer == null)
         {
             Debug.LogError("SpriteRenderer no encontrado en el Wizard.");
         }
+
+        GameObject playerObject = GameObject.FindWithTag("Player");
+        if (playerObject != null)
+        {
+            playerInfo = playerObject.GetComponent<PlayerInfo>();
+        }
+        else
+        {
+            Debug.LogError("No se encontró al jugador.");
+        }
+
+        #endregion
     }
 
-    // Detecta cuando el jugador entra al rango de ataque
+    #region Start Attacking
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            playerTransform = other.transform;  // Guarda la referencia al jugador
+            playerTransform = other.transform;
             Debug.Log("Jugador ha entrado en el rango de ataque.");
 
-            // Inicia la coroutine para instanciar el proyectil cada 2 segundos
             if (attackCoroutine == null)
             {
                 attackCoroutine = StartCoroutine(AttackRepeatedly(other.transform));
@@ -45,7 +62,10 @@ public class Wizard : MonoBehaviour
         }
     }
 
-    // Detiene la generación de proyectiles cuando el jugador sale del rango
+    #endregion
+
+    #region Stop Attacking
+
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -53,49 +73,48 @@ public class Wizard : MonoBehaviour
             Debug.Log("Jugador ha salido del rango de ataque.");
             if (attackCoroutine != null)
             {
-                StopCoroutine(attackCoroutine);  // Detiene la generación de proyectiles
+                StopCoroutine(attackCoroutine);
                 attackCoroutine = null;
             }
         }
     }
 
-    // Coroutine para instanciar el proyectil cada 'attackInterval' segundos
+    #endregion
+
+    #region Generates Attack
+
     IEnumerator AttackRepeatedly(Transform playerTransform)
     {
         while (true)
         {
-            GameObject projectile = InstantiateProjectile(playerTransform.position);  // Llama a la función para instanciar el proyectil
-            yield return new WaitForSeconds(attackInterval);  // Espera el intervalo entre ataques
-            Destroy(projectile);  // Destruye el proyectil después del intervalo
+            GameObject projectile = InstantiateProjectile(playerTransform.position);
+            yield return new WaitForSeconds(attackInterval);
+            Destroy(projectile);
         }
     }
 
-    // Método para instanciar el proyectil desde el punto de ataque hacia la posición del jugador
+    #endregion
+
+    #region Creates Attack GameObject
+
     GameObject InstantiateProjectile(Vector2 playerPosition)
     {
         if (projectilePrefab != null && attackPoint != null)
         {
-            // Instancia el proyectil en la posición del punto de ataque
             GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
 
-            // Calcula la dirección hacia el jugador en el momento de la instanciación
             Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
 
-            // Asigna la dirección y velocidad al proyectil (por ejemplo, usando Rigidbody2D)
             Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.velocity = direction * speed;
+                rb.velocity = direction * proyectileSpeed;
             }
 
-            // Rota el proyectil hacia la dirección de su movimiento
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            projectile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
 
-            // Ajusta la rotación del proyectil
-            // Si tu proyectil está orientado hacia la izquierda, ajusta la rotación de modo que sea correcto
-            projectile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90)); // Resta 90 grados
-
-            return projectile;  // Retorna el proyectil instanciado
+            return projectile;
         }
         else
         {
@@ -104,24 +123,73 @@ public class Wizard : MonoBehaviour
         }
     }
 
-    // Actualiza el voltear del Wizard para mirar al jugador sin rotar
+    #endregion
+
     void Update()
     {
+        #region Flip Wizard
+
         if (playerTransform != null)
         {
-            // Determina si el jugador está a la derecha o izquierda del Wizard
             bool isPlayerToRight = playerTransform.position.x > transform.position.x;
 
-            // Si el jugador está a la derecha y el Wizard está mirando a la izquierda, voltear
             if (isPlayerToRight && transform.localScale.x > 0)
             {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
-            // Si el jugador está a la izquierda y el Wizard está mirando a la derecha, voltear
             else if (!isPlayerToRight && transform.localScale.x < 0)
             {
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             }
         }
+
+        #endregion
     }
+
+    #region Damage Player on Collision and Dies
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            if (playerInfo != null)
+            {
+                playerInfo.health -= damage;
+                Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
+            }
+            else
+            {
+                Debug.LogError("No se encontró el script PlayerInfo en el jugador.");
+            }
+
+            StartCoroutine(FadeOutAndDestroy());
+        }
+    }
+
+    private IEnumerator FadeOutAndDestroy()
+    {
+        if (wizardCollider != null)
+        {
+            wizardCollider.enabled = false;
+        }
+
+        if (wizardSpriteRenderer != null)
+        {
+            float fadeDuration = 0.5f;
+            float elapsedTime = 0f;
+
+            Color originalColor = wizardSpriteRenderer.color;
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+                wizardSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+                yield return null;
+            }
+        }
+
+        Destroy(gameObject);
+    }
+
+    #endregion
 }

@@ -1,7 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Skeleton2 : MonoBehaviour
+public class Skeleton1 : MonoBehaviour
 {
     #region Variables
 
