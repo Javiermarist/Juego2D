@@ -6,7 +6,7 @@ public class Skeleton1 : MonoBehaviour
 {
     #region Variables
 
-    public Transform player;
+    private Transform playerTransform;
     private Rigidbody2D rb;
     private Animator animator;
     private PlayerInfo playerInfo;
@@ -36,9 +36,11 @@ public class Skeleton1 : MonoBehaviour
         skeletonCollider = GetComponent<Collider2D>();
         lastPosition = transform.position;
 
+        // Buscar al jugador automáticamente al instanciar el enemigo
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
         {
+            playerTransform = playerObject.transform;
             playerInfo = playerObject.GetComponent<PlayerInfo>();
         }
         else
@@ -55,7 +57,10 @@ public class Skeleton1 : MonoBehaviour
 
         if (!isPaused && !isMoving)
         {
-            Vector3 direction = (player.position - transform.position).normalized;
+            // Asignar una distancia aleatoria entre 5 y 15
+            moveDistance = Random.Range(5f, 15f);
+
+            Vector3 direction = (playerTransform.position - transform.position).normalized;
             targetPosition = transform.position + direction * moveDistance;
 
             isMoving = true;
@@ -194,4 +199,10 @@ public class Skeleton1 : MonoBehaviour
     }
 
     #endregion
+
+    // Método Initialize para asignar el transform del jugador manualmente si es necesario
+    public void Initialize(Transform player)
+    {
+        playerTransform = player;
+    }
 }

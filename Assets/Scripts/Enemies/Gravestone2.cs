@@ -82,7 +82,7 @@ public class Gravestone2 : MonoBehaviour
                 Vector2 playerPosition = playerTransform.position;
 
                 // Dispara tres proyectiles con diferentes ángulos
-                InstantiateProjectile(playerPosition); // Hacia el jugador
+                InstantiateProjectile(playerPosition, 0f); // Hacia el jugador
                 InstantiateProjectile(playerPosition, angleOffset); // Desviado a la derecha
                 InstantiateProjectile(playerPosition, -angleOffset); // Desviado a la izquierda
             }
@@ -94,6 +94,9 @@ public class Gravestone2 : MonoBehaviour
     GameObject InstantiateProjectile(Vector2 playerPosition, float additionalAngle = 0f)
     {
         GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
+
+        // Asignar el enemigo como el padre del proyectil
+        projectile.transform.SetParent(transform);
 
         // Calcular dirección base hacia el jugador
         Vector2 baseDirection = (playerPosition - (Vector2)attackPoint.position).normalized;
@@ -115,6 +118,9 @@ public class Gravestone2 : MonoBehaviour
 
         // Rotar el proyectil para que apunte en la dirección correcta
         projectile.transform.rotation = Quaternion.Euler(0, 0, adjustedAngle - 90);
+
+        // Pasamos el transform al proyectil
+        projectile.GetComponent<Fireball>().Initialize(playerTransform);
 
         Destroy(projectile, attackDuration); // Destruir el proyectil tras la duración
 
@@ -175,4 +181,9 @@ public class Gravestone2 : MonoBehaviour
     }
 
     #endregion
+
+    public void Initialize(Transform player)
+    {
+        playerTransform = player;
+    }
 }

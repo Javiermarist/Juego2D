@@ -9,6 +9,7 @@ public class Gravestone1 : MonoBehaviour
     private Transform playerTransform;
     private SpriteRenderer gravestoneSpriteRenderer;
     private PlayerInfo playerInfo;
+
     private Animator animator;
     private Collider2D gravestoneCollider;
 
@@ -31,9 +32,11 @@ public class Gravestone1 : MonoBehaviour
         animator = GetComponent<Animator>();
         gravestoneCollider = GetComponent<Collider2D>();
 
+        // Buscar al jugador automáticamente al instanciar el enemigo
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
         {
+            playerTransform = playerObject.transform;
             playerInfo = playerObject.GetComponent<PlayerInfo>();
         }
 
@@ -46,8 +49,6 @@ public class Gravestone1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            playerTransform = other.transform;
-
             if (attackCoroutine == null)
             {
                 attackCoroutine = StartCoroutine(AttackRepeatedly());
@@ -95,6 +96,9 @@ public class Gravestone1 : MonoBehaviour
     {
         GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
 
+        // Asignar el enemigo como el padre del proyectil
+        projectile.transform.SetParent(transform);
+
         // Calcular dirección hacia el jugador
         Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
 
@@ -133,7 +137,6 @@ public class Gravestone1 : MonoBehaviour
             }
         }
     }
-
 
     #endregion
 
@@ -189,4 +192,10 @@ public class Gravestone1 : MonoBehaviour
     }
 
     #endregion
+
+    // Método Initialize para asignar el transform del jugador manualmente si es necesario
+    public void Initialize(Transform player)
+    {
+        playerTransform = player;
+    }
 }

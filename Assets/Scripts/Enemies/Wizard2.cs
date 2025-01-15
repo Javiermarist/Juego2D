@@ -47,10 +47,18 @@ public class Wizard2 : MonoBehaviour
         }
 
         #endregion
+
+        // Iniciar el ataque directamente al comenzar
+        if (attackCoroutine == null && playerTransform != null)
+        {
+            attackCoroutine = StartCoroutine(AttackRepeatedly(playerTransform));
+        }
     }
 
     #region Start Attacking
 
+    // Comentamos el código que activaba el ataque cuando el jugador entraba al rango
+    /*
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -64,11 +72,14 @@ public class Wizard2 : MonoBehaviour
             }
         }
     }
+    */
 
     #endregion
 
     #region Stop Attacking
 
+    // Comentamos el código que desactivaba el ataque cuando el jugador salía del rango
+    /*
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -81,6 +92,7 @@ public class Wizard2 : MonoBehaviour
             }
         }
     }
+    */
 
     #endregion
 
@@ -90,7 +102,11 @@ public class Wizard2 : MonoBehaviour
     {
         while (true)
         {
-            SpawnProjectiles(playerTransform.position);
+            if (playerTransform != null)
+            {
+                SpawnProjectiles(playerTransform.position);
+            }
+
             yield return new WaitForSeconds(attackInterval);
         }
     }
@@ -142,6 +158,9 @@ public class Wizard2 : MonoBehaviour
 
         // Rotar el proyectil para que apunte en la dirección correcta
         projectile.transform.rotation = Quaternion.Euler(0, 0, adjustedAngle - 90);
+
+        // Pasamos el transform al proyectil
+        projectile.GetComponent<Fireball>().Initialize(playerTransform);
 
         return projectile;
     }
@@ -215,4 +234,9 @@ public class Wizard2 : MonoBehaviour
     }
 
     #endregion
+
+    public void Initialize(Transform player)
+    {
+        playerTransform = player;
+    }
 }

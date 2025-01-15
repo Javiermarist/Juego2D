@@ -5,7 +5,7 @@ public class Zombie1 : MonoBehaviour
 {
     #region Variables
 
-    public Transform player;
+    private Transform playerTransform;
     private Rigidbody2D rb;
     private Animator animator;
     private PlayerInfo playerInfo;
@@ -17,6 +17,11 @@ public class Zombie1 : MonoBehaviour
     private bool isStopped = false;
     public int damage;
 
+    public float repulsionRadius = 1.5f; // Radio de repulsión entre enemigos
+    public float repulsionStrength = 0.5f; // Fuerza de repulsión (desviación de la dirección)
+
+    private Collider2D[] nearbyEnemies;
+
     #endregion
 
     void Start()
@@ -27,9 +32,11 @@ public class Zombie1 : MonoBehaviour
         animator = GetComponent<Animator>();
         zombieCollider = GetComponent<Collider2D>();
 
+        // Buscar al jugador automáticamente al instanciar el enemigo
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
         {
+            playerTransform = playerObject.transform;
             playerInfo = playerObject.GetComponent<PlayerInfo>();
         }
         else
@@ -46,15 +53,36 @@ public class Zombie1 : MonoBehaviour
 
         if (!isStopped)
         {
-            Vector2 direction = (player.position - transform.position).normalized;
+            Vector2 direction = (playerTransform.position - transform.position).normalized;
             rb.velocity = direction * speed;
 
-            bool isPlayerRight = transform.position.x < player.transform.position.x;
+            bool isPlayerRight = transform.position.x < playerTransform.position.x;
             Flip(isPlayerRight);
         }
         else
         {
-            rb.velocity = Vector2.zero;
+            rb.velocity = Vector2.zero;  // Asegurarse de que se detenga completamente
+        }
+
+        #endregion
+
+        #region Repulsión discreta entre enemigos
+
+        // Detectar enemigos cercanos usando el CircleCollider2D grande
+        nearbyEnemies = Physics2D.OverlapCircleAll(transform.position, repulsionRadius, LayerMask.GetMask("Enemy"));
+
+        foreach (var enemy in nearbyEnemies)
+        {
+            if (enemy != zombieCollider) // Evitar que el enemigo se repela a sí mismo
+            {
+                Vector2 directionToRepel = (transform.position - enemy.transform.position).normalized;
+
+                // Calcular una ligera desviación de la dirección original
+                Vector2 repulsionVector = directionToRepel * repulsionStrength;
+
+                // Desviar ligeramente la dirección del enemigo
+                rb.velocity += repulsionVector; // Solo ajustar la dirección sin cambiar la velocidad global
+            }
         }
 
         #endregion
@@ -101,7 +129,10 @@ public class Zombie1 : MonoBehaviour
 
     private IEnumerator HandleDeath()
     {
-        isStopped = true;
+        isStopped = true;  // Detener el movimiento al morir
+
+        // Detener la velocidad inmediatamente
+        rb.velocity = Vector2.zero;
 
         if (zombieCollider != null)
         {
@@ -119,6 +150,22 @@ public class Zombie1 : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    #endregion
+
+    // Método Initialize para asignar el transform del jugador manualmente si es necesario
+    public void Initialize(Transform player)
+    {
+        playerTransform = player;
+    }
+
+    #region Gizmos (solo para visualización en el editor)
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, repulsionRadius); // Mostrar el radio de repulsión
     }
 
     #endregion

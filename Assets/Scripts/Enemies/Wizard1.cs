@@ -26,7 +26,7 @@ public class Wizard1 : MonoBehaviour
 
         wizardSpriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        wizardCollider = GetComponent<Collider2D>();
+        wizardCollider = GetComponent<Collider2D>();  // Mantén el collider si decides usarlo en otras partes
 
         if (wizardSpriteRenderer == null)
         {
@@ -34,6 +34,7 @@ public class Wizard1 : MonoBehaviour
         }
 
         GameObject playerObject = GameObject.FindWithTag("Player");
+
         if (playerObject != null)
         {
             playerInfo = playerObject.GetComponent<PlayerInfo>();
@@ -44,10 +45,18 @@ public class Wizard1 : MonoBehaviour
         }
 
         #endregion
+
+        // Iniciar el ataque directamente al comenzar
+        if (attackCoroutine == null && playerTransform != null)
+        {
+            attackCoroutine = StartCoroutine(AttackRepeatedly(playerTransform));
+        }
     }
 
     #region Start Attacking
 
+    // Comentamos el código que activaba el ataque cuando el jugador entraba al rango
+    /*
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -61,11 +70,10 @@ public class Wizard1 : MonoBehaviour
             }
         }
     }
+    */
 
-    #endregion
-
-    #region Stop Attacking
-
+    // Comentamos el código que desactivaba el ataque cuando el jugador salía del rango
+    /*
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -78,6 +86,28 @@ public class Wizard1 : MonoBehaviour
             }
         }
     }
+    */
+
+    void Update()
+    {
+        #region Flip Wizard
+
+        if (playerTransform != null)
+        {
+            bool isPlayerToRight = playerTransform.position.x > transform.position.x;
+
+            if (isPlayerToRight && transform.localScale.x > 0)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+            else if (!isPlayerToRight && transform.localScale.x < 0)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+        }
+
+        #endregion
+    }
 
     #endregion
 
@@ -87,7 +117,11 @@ public class Wizard1 : MonoBehaviour
     {
         while (true)
         {
-            InstantiateProjectile(playerTransform.position);
+            if (playerTransform != null)
+            {
+                InstantiateProjectile(playerTransform.position);
+            }
+
             yield return new WaitForSeconds(attackInterval);
         }
     }
@@ -100,7 +134,11 @@ public class Wizard1 : MonoBehaviour
     {
         if (projectilePrefab != null && attackPoint != null)
         {
+            // Instanciamos el proyectil
             GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
+
+            // Asignamos el proyectil como hijo del Wizard1
+            projectile.transform.SetParent(transform);
 
             Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
 
@@ -124,27 +162,6 @@ public class Wizard1 : MonoBehaviour
 
     #endregion
 
-    void Update()
-    {
-        #region Flip Wizard
-
-        if (playerTransform != null)
-        {
-            bool isPlayerToRight = playerTransform.position.x > transform.position.x;
-
-            if (isPlayerToRight && transform.localScale.x > 0)
-            {
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            }
-            else if (!isPlayerToRight && transform.localScale.x < 0)
-            {
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            }
-        }
-
-        #endregion
-    }
-
     #region Damage Player on Collision and Dies
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -161,6 +178,13 @@ public class Wizard1 : MonoBehaviour
                 Debug.LogError("No se encontró el script PlayerInfo en el jugador.");
             }
 
+            // Desactivar el collider para permitir que el jugador lo atraviese
+            if (wizardCollider != null)
+            {
+                wizardCollider.enabled = false;  // Desactiva el collider
+            }
+
+            // Llamar al efecto de desvanecimiento y destrucción
             StartCoroutine(FadeOutAndDestroy());
         }
     }
@@ -191,4 +215,10 @@ public class Wizard1 : MonoBehaviour
     }
 
     #endregion
+
+    // Método Initialize para asignar el Transform del jugador
+    public void Initialize(Transform player)
+    {
+        playerTransform = player;
+    }
 }
