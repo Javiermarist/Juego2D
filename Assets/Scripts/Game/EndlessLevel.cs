@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EndlessLevel : MonoBehaviour
 {
@@ -9,8 +10,6 @@ public class EndlessLevel : MonoBehaviour
     public Transform playerTransform;
     public GameObject[] enemies; // Array de enemigos que se asignarán en el Inspector
     public float[] enemyWeights; // Pesos para cada enemigo (debe coincidir con el tamaño de enemies)
-
-    // Contenedores para cada tipo de enemigo
     public Transform[] enemyContainers;
 
     public float spawnInterval = 5f; // Intervalo entre spawns de enemigos
@@ -18,39 +17,36 @@ public class EndlessLevel : MonoBehaviour
     public Vector2 spawnMax = new Vector2(10, 10); // Máximos del rango de spawn
 
     [Header("UI Elements")]
-    public TextMeshProUGUI timeText; // Texto para el contador de tiempo transcurrido (usa TextMeshProUGUI si usas TMP)
+    public TextMeshProUGUI timeText; // Texto para el contador de tiempo transcurrido
     public TextMeshProUGUI enemyCountText; // Texto para mostrar la cantidad de enemigos instanciados
+    public GameObject pauseMenuCanvas; // Canvas del menú de pausa
 
     private float elapsedTime = 0f; // Tiempo transcurrido desde que empezó el nivel
     private bool isPaused = false; // ¿Está pausado el juego?
     private float spawnTimer; // Temporizador para el spawn de enemigos
-    private int levelNumber = 3; // Establece el nivel como 3 (Endless)
 
     void Start()
     {
-        if (levelNumber == 3)
-        {
-            // Nivel Endless: No hacer nada cuando termine el nivel
-            // Aquí no hay fin del nivel, así que eliminamos la duración del juego
-        }
-
         spawnTimer = spawnInterval;
+
+        // Asegúrate de que el Canvas del menú de pausa esté desactivado al principio
+        if (pauseMenuCanvas != null)
+        {
+            pauseMenuCanvas.SetActive(false);
+        }
     }
 
     void Update()
     {
         if (isPaused) return;
 
-        if (levelNumber == 3)
-        {
-            // Actualizar el tiempo transcurrido
-            elapsedTime += Time.deltaTime;
+        // Actualizar el tiempo transcurrido
+        elapsedTime += Time.deltaTime;
 
-            // Mostrar el tiempo transcurrido en el formato deseado (en segundos)
-            if (timeText != null)
-            {
-                timeText.text = "Tiempo Vivo: " + Mathf.FloorToInt(elapsedTime).ToString() + "s";
-            }
+        // Mostrar el tiempo transcurrido en el formato deseado (en segundos)
+        if (timeText != null)
+        {
+            timeText.text = "Tiempo Vivo:  " + Mathf.FloorToInt(elapsedTime).ToString() + "s";
         }
 
         // Generar enemigos en intervalos
@@ -81,10 +77,17 @@ public class EndlessLevel : MonoBehaviour
         // Seleccionar un enemigo aleatorio basado en probabilidades ponderadas
         GameObject enemyPrefab = GetEnemyByWeight();
 
-        // Generar posición aleatoria
-        float randomX = Random.Range(spawnMin.x, spawnMax.x);
-        float randomY = Random.Range(spawnMin.y, spawnMax.y);
-        Vector2 spawnPosition = new Vector2(randomX, randomY);
+        Vector2 spawnPosition;
+
+        // Buscar una posición válida que no esté a menos de 5 unidades del jugador
+        do
+        {
+            Debug.Log("Posicion de Spawn correcta");
+            float randomX = Random.Range(spawnMin.x, spawnMax.x);
+            float randomY = Random.Range(spawnMin.y, spawnMax.y);
+            spawnPosition = new Vector2(randomX, randomY);
+        }
+        while (Vector2.Distance(spawnPosition, playerTransform.position) < 5f); // Validar la distancia
 
         // Instanciar enemigo
         GameObject enemyInstance = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
@@ -111,17 +114,13 @@ public class EndlessLevel : MonoBehaviour
 
     GameObject GetEnemyByWeight()
     {
-        // Calcular la suma total de los pesos
         float totalWeight = 0;
         foreach (float weight in enemyWeights)
         {
             totalWeight += weight;
         }
 
-        // Seleccionar un número aleatorio basado en el total de pesos
         float randomWeight = Random.Range(0f, totalWeight);
-
-        // Seleccionar el enemigo basado en el peso
         float cumulativeWeight = 0;
         for (int i = 0; i < enemies.Length; i++)
         {
@@ -131,9 +130,7 @@ public class EndlessLevel : MonoBehaviour
                 return enemies[i];
             }
         }
-
-        // En caso de que algo salga mal, retornar el primer enemigo
-        return enemies[0];
+        return enemies[0]; // En caso de que algo salga mal
     }
 
     void TogglePause()
@@ -162,12 +159,38 @@ public class EndlessLevel : MonoBehaviour
             }
         }
 
+        // Mostrar u ocultar el Canvas de pausa
+        if (pauseMenuCanvas != null)
+        {
+            pauseMenuCanvas.SetActive(isPaused);
+        }
+
         Debug.Log(isPaused ? "Juego pausado" : "Juego reanudado");
+    }
+
+    public void ResumeGame()
+    {
+        TogglePause(); // Llamar a TogglePause() para reanudar el juego
+    }
+
+    // Función para reiniciar la escena actual
+    public void RestartLevel()
+    {
+        Time.timeScale = 1; // Asegúrate de que el tiempo se restaure
+        string currentSceneName = SceneManager.GetActiveScene().name; // Obtener el nombre de la escena actual
+        SceneManager.LoadScene(currentSceneName); // Recargar la escena actual
+    }
+
+    // Función para volver al menú principal
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1; // Asegúrate de que el tiempo se restaure
+        SceneManager.LoadScene("MainMenu"); // Reemplaza con el nombre de tu escena de menú principal
     }
 
     public void EndGame()
     {
-        // El nivel es interminable, por lo que no terminamos el juego aquí.
-        // Puedes desactivar las mecánicas que consideres necesarias para implementar un "fin" personal, como un "Game Over".
+        // No terminamos el juego aquí ya que es un nivel interminable.
+        // Agregar funcionalidad para terminar el juego si lo deseas
     }
 }

@@ -96,9 +96,6 @@ public class Gravestone1 : MonoBehaviour
     {
         GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
 
-        // Asignar el enemigo como el padre del proyectil
-        projectile.transform.SetParent(transform);
-
         // Calcular dirección hacia el jugador
         Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
 
@@ -127,16 +124,24 @@ public class Gravestone1 : MonoBehaviour
             float timePassed = 0f;
             Vector3 initialScale = projectile.transform.localScale;
 
+            // Seguimos incrementando el tamaño del proyectil mientras dure el ataque
             while (timePassed < attackDuration)
             {
+                // Verificamos si el proyectil ha sido destruido
+                if (projectile == null)
+                {
+                    yield break; // Si el proyectil ya no existe, salimos de la coroutine
+                }
+
                 timePassed += Time.deltaTime;
-                float scaleMultiplier = 1 + (timePassed * 1f);
+                float scaleMultiplier = 1 + (timePassed * 1f); // Incremento en escala
                 projectile.transform.localScale = initialScale * scaleMultiplier;
 
                 yield return null;
             }
         }
     }
+
 
     #endregion
 

@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4065663546248048314}
   - component: {fileID: 209728182148360569}
-  - component: {fileID: 9041408378588218223}
+  - component: {fileID: 5738309084082717144}
   - component: {fileID: 1768709421435193616}
   - component: {fileID: 3929550432813369929}
-  - component: {fileID: 5738309084082717144}
+  - component: {fileID: 9041408378588218223}
   m_Layer: 7
   m_Name: Gravestone 3.2
   m_TagString: Enemy
@@ -89,27 +89,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &9041408378588218223
-Animator:
-  serializedVersion: 5
+--- !u!58 &5738309084082717144
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2373115574219131876}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8456740b37f82334fba30ca772ca015c, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.049832314}
+  serializedVersion: 2
+  m_Radius: 50
 --- !u!61 &1768709421435193616
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -173,44 +187,32 @@ MonoBehaviour:
   deathAnimation: {fileID: 7400000, guid: 4d7eda0ae2ab73641b23c780d65d884a, type: 2}
   attackInterval: 1
   attackDuration: 3
-  projectileSpeed: 10
+  projectileSpeed: 8
   damage: 1
-  angleOffset: 25
---- !u!58 &5738309084082717144
-CircleCollider2D:
+  numberOfProjectiles: 2
+  spreadAngle: 25
+  sizeIncreaseRate: 1
+--- !u!95 &9041408378588218223
+Animator:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2373115574219131876}
   m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.049832314}
-  serializedVersion: 2
-  m_Radius: 50
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8456740b37f82334fba30ca772ca015c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5236965050081375804
 GameObject:
   m_ObjectHideFlags: 0

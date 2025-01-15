@@ -1,33 +1,47 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
     [Header("Game Settings")]
     public Transform playerTransform;
-    public GameObject[] enemies; // Array de enemigos que se asignarán en el Inspector
-    public float[] enemyWeights; // Pesos para cada enemigo (debe coincidir con el tamaño de enemies)
-
-    // Contenedores para cada tipo de enemigo
+    public GameObject[] enemies;
+    public float[] enemyWeights;
     public Transform[] enemyContainers;
-
-    public float gameDuration = 300f; // Duración del juego en segundos
-    public float spawnInterval = 5f; // Intervalo entre spawns de enemigos
-    public Vector2 spawnMin = new Vector2(-10, -10); // Mínimos del rango de spawn
-    public Vector2 spawnMax = new Vector2(10, 10); // Máximos del rango de spawn
+    public float gameDuration = 300f;
+    public float spawnInterval = 5f;
+    public Vector2 spawnMin = new Vector2(-10, -10);
+    public Vector2 spawnMax = new Vector2(10, 10);
 
     [Header("UI Elements")]
-    public TextMeshProUGUI timeText; // Texto para el contador de tiempo restante (usa TextMeshProUGUI si usas TMP)
-    public TextMeshProUGUI enemyCountText; // Texto para mostrar la cantidad de enemigos instanciados
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI enemyCountText;
 
-    private float timeRemaining; // Tiempo restante del juego
-    private bool isPaused = false; // ¿Está pausado el juego?
-    private float spawnTimer; // Temporizador para el spawn de enemigos
+    [Header("Pause Menu Settings")]
+    public GameObject pauseMenuCanvas; // Canvas del menú de pausa
+
+    [Header("End Game Settings")]
+    public GameObject endGameCanvas; // Referencia al Canvas de fin del juego
+
+    private float timeRemaining;
+    private bool isPaused = false;
+    private float spawnTimer;
 
     void Start()
     {
         timeRemaining = gameDuration;
         spawnTimer = spawnInterval;
+
+        // Asegurarse de que los Canvas estén desactivados al inicio
+        if (pauseMenuCanvas != null)
+        {
+            pauseMenuCanvas.SetActive(false);
+        }
+        if (endGameCanvas != null)
+        {
+            endGameCanvas.SetActive(false);
+        }
     }
 
     void Update()
@@ -68,66 +82,36 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void SpawnEnemy()
+    void EndGame()
     {
-        if (enemies.Length == 0) return;
+        Debug.Log("¡El juego ha terminado!");
+        isPaused = true;
+        Time.timeScale = 0;
 
-        // Seleccionar un enemigo aleatorio basado en probabilidades ponderadas
-        GameObject enemyPrefab = GetEnemyByWeight();
-
-        // Generar posición aleatoria
-        float randomX = Random.Range(spawnMin.x, spawnMax.x);
-        float randomY = Random.Range(spawnMin.y, spawnMax.y);
-        Vector2 spawnPosition = new Vector2(randomX, randomY);
-
-        // Instanciar enemigo
-        GameObject enemyInstance = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-
-        // Asignar el Transform del jugador al enemigo
-        var enemyScript = enemyInstance.GetComponent<MonoBehaviour>();
-        if (enemyScript != null)
+        // Mostrar el Canvas de fin del juego
+        if (endGameCanvas != null)
         {
-            // Llamar al método de inicialización del script del enemigo
-            var method = enemyScript.GetType().GetMethod("Initialize");
-            if (method != null)
-            {
-                method.Invoke(enemyScript, new object[] { playerTransform });
-            }
-        }
-
-        // Hacer que el enemigo sea hijo del contenedor correspondiente
-        int enemyIndex = System.Array.IndexOf(enemies, enemyPrefab);
-        if (enemyIndex >= 0 && enemyIndex < enemyContainers.Length)
-        {
-            enemyInstance.transform.SetParent(enemyContainers[enemyIndex]);
+            endGameCanvas.SetActive(true);
         }
     }
 
-    GameObject GetEnemyByWeight()
+    void SpawnEnemy()
     {
-        // Calcular la suma total de los pesos
-        float totalWeight = 0;
-        foreach (float weight in enemyWeights)
+        Vector2 spawnPosition;
+
+        // Buscar una posición válida que no esté a menos de 5 unidades del jugador
+        do
         {
-            totalWeight += weight;
+            Debug.Log("Posicion de Spawn Correcta");
+            float x = Random.Range(spawnMin.x, spawnMax.x);
+            float y = Random.Range(spawnMin.y, spawnMax.y);
+            spawnPosition = new Vector2(x, y);
         }
+        while (Vector2.Distance(spawnPosition, playerTransform.position) < 5f);
 
-        // Seleccionar un número aleatorio basado en el total de pesos
-        float randomWeight = Random.Range(0f, totalWeight);
-
-        // Seleccionar el enemigo basado en el peso
-        float cumulativeWeight = 0;
-        for (int i = 0; i < enemies.Length; i++)
-        {
-            cumulativeWeight += enemyWeights[i];
-            if (randomWeight <= cumulativeWeight)
-            {
-                return enemies[i];
-            }
-        }
-
-        // En caso de que algo salga mal, retornar el primer enemigo
-        return enemies[0];
+        // Instanciar al enemigo en la posición generada
+        int enemyIndex = Random.Range(0, enemies.Length);
+        Instantiate(enemies[enemyIndex], spawnPosition, Quaternion.identity);
     }
 
     void TogglePause()
@@ -135,39 +119,34 @@ public class GameController : MonoBehaviour
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0 : 1;
 
-        // Detener o reactivar los scripts de los enemigos
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        // Activar o desactivar el Canvas del menú de pausa
+        if (pauseMenuCanvas != null)
         {
-            MonoBehaviour[] enemyScripts = enemy.GetComponents<MonoBehaviour>();
-            foreach (MonoBehaviour script in enemyScripts)
-            {
-                script.enabled = !isPaused;
-            }
+            pauseMenuCanvas.SetActive(isPaused);
         }
-
-        // Detener o reactivar al jugador
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            MonoBehaviour[] playerScripts = player.GetComponents<MonoBehaviour>();
-            foreach (MonoBehaviour script in playerScripts)
-            {
-                script.enabled = !isPaused;
-            }
-        }
-
-        Debug.Log(isPaused ? "Juego pausado" : "Juego reanudado");
     }
 
-    void EndGame()
+    public void ResumeGame()
     {
-        Debug.Log("¡El juego ha terminado!");
-        Time.timeScale = 0;
-        isPaused = true;
+        isPaused = false;
+        Time.timeScale = 1;
+
+        // Ocultar el menú de pausa
+        if (pauseMenuCanvas != null)
+        {
+            pauseMenuCanvas.SetActive(false);
+        }
     }
 
-    public float GetTimeRemaining()
+    public void LoadNextLevel(string nextLevelName)
     {
-        return timeRemaining;
+        Time.timeScale = 1; // Asegurarse de que el tiempo esté restaurado antes de cambiar la escena
+        SceneManager.LoadScene(nextLevelName);
+    }
+
+    public void GoToMainMenu(string sceneName)
+    {
+        Time.timeScale = 1; // Restaurar el tiempo antes de cambiar de escena
+        SceneManager.LoadScene(sceneName);
     }
 }

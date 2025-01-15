@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Gravestone2 : MonoBehaviour
@@ -10,6 +9,7 @@ public class Gravestone2 : MonoBehaviour
     private Transform playerTransform;
     private SpriteRenderer gravestoneSpriteRenderer;
     private PlayerInfo playerInfo;
+
     private Animator animator;
     private Collider2D gravestoneCollider;
 
@@ -21,7 +21,11 @@ public class Gravestone2 : MonoBehaviour
     public float attackDuration;
     public float projectileSpeed;
     public int damage;
-    public float angleOffset = 45f;
+
+    // Parámetros de los proyectiles
+    public int numberOfProjectiles = 5; // Número de proyectiles a disparar
+    public float spreadAngle = 40f; // Ángulo de dispersión de los proyectiles
+    public float sizeIncreaseRate = 0.1f; // Cuánto aumentará el tamaño del proyectil por segundo
 
     #endregion
 
@@ -33,9 +37,11 @@ public class Gravestone2 : MonoBehaviour
         animator = GetComponent<Animator>();
         gravestoneCollider = GetComponent<Collider2D>();
 
+        // Buscar al jugador automáticamente al instanciar el enemigo
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
         {
+            playerTransform = playerObject.transform;
             playerInfo = playerObject.GetComponent<PlayerInfo>();
         }
 
@@ -48,8 +54,6 @@ public class Gravestone2 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            playerTransform = other.transform;
-
             if (attackCoroutine == null)
             {
                 attackCoroutine = StartCoroutine(AttackRepeatedly());
@@ -79,53 +83,100 @@ public class Gravestone2 : MonoBehaviour
         {
             if (projectilePrefab != null && attackPoint != null && playerTransform != null)
             {
-                Vector2 playerPosition = playerTransform.position;
-
-                // Dispara tres proyectiles con diferentes ángulos
-                InstantiateProjectile(playerPosition, 0f); // Hacia el jugador
-                InstantiateProjectile(playerPosition, angleOffset); // Desviado a la derecha
-                InstantiateProjectile(playerPosition, -angleOffset); // Desviado a la izquierda
+                // Lanza los proyectiles en direcciones dispersas
+                SpawnProjectiles(playerTransform.position);
             }
 
             yield return new WaitForSeconds(attackInterval);
         }
     }
 
-    GameObject InstantiateProjectile(Vector2 playerPosition, float additionalAngle = 0f)
+    void SpawnProjectiles(Vector2 playerPosition)
+    {
+        // Dispara el proyectil central directamente hacia el jugador
+        GameObject centralProjectile = InstantiateProjectile(playerPosition, 0f);
+        StartCoroutine(IncreaseProjectileScale(centralProjectile));
+        Destroy(centralProjectile, attackDuration);
+
+        // Calcula el ángulo de separación
+        float angleStep = spreadAngle / (numberOfProjectiles - 1); // Ángulo de separación de los proyectiles
+        float startAngle = -spreadAngle / 2; // Ángulo inicial para el primer proyectil
+
+        // Lanza los proyectiles laterales
+        for (int i = 1; i < numberOfProjectiles; i++)
+        {
+            float currentAngle = startAngle + (angleStep * i); // Ángulo para el proyectil lateral
+            GameObject projectile = InstantiateProjectile(playerPosition, currentAngle);
+            StartCoroutine(IncreaseProjectileScale(projectile));
+            Destroy(projectile, attackDuration);
+        }
+    }
+
+    GameObject InstantiateProjectile(Vector2 playerPosition, float angle)
     {
         GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
 
-        // Asignar el enemigo como el padre del proyectil
-        projectile.transform.SetParent(transform);
+        // No asignamos el enemigo como el padre del proyectil
+        // projectile.transform.SetParent(transform); // Eliminar esta línea
 
-        // Calcular dirección base hacia el jugador
-        Vector2 baseDirection = (playerPosition - (Vector2)attackPoint.position).normalized;
+        // Calcular la dirección hacia el jugador
+        Vector2 directionToPlayer = (playerPosition - (Vector2)attackPoint.position).normalized;
 
-        // Ajustar el ángulo de la dirección
-        float baseAngle = Mathf.Atan2(baseDirection.y, baseDirection.x) * Mathf.Rad2Deg;
-        float adjustedAngle = baseAngle + additionalAngle;
-
-        Vector2 direction = new Vector2(
-            Mathf.Cos(adjustedAngle * Mathf.Deg2Rad),
-            Mathf.Sin(adjustedAngle * Mathf.Deg2Rad)
-        );
+        // Rotar la dirección basada en el ángulo
+        Vector2 rotatedDirection = RotateDirection(directionToPlayer, angle);
 
         Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            rb.velocity = direction * projectileSpeed;
+            rb.velocity = rotatedDirection * projectileSpeed;
         }
 
-        // Rotar el proyectil para que apunte en la dirección correcta
+        // Rotar el proyectil para que apunte hacia la dirección correcta
+        float adjustedAngle = Mathf.Atan2(rotatedDirection.y, rotatedDirection.x) * Mathf.Rad2Deg;
         projectile.transform.rotation = Quaternion.Euler(0, 0, adjustedAngle - 90);
-
-        // Pasamos el transform al proyectil
-        projectile.GetComponent<Fireball>().Initialize(playerTransform);
-
-        Destroy(projectile, attackDuration); // Destruir el proyectil tras la duración
 
         return projectile;
     }
+
+    // Función para rotar una dirección dada por un ángulo
+    Vector2 RotateDirection(Vector2 direction, float angle)
+    {
+        float radians = angle * Mathf.Deg2Rad;
+        float cos = Mathf.Cos(radians);
+        float sin = Mathf.Sin(radians);
+        return new Vector2(cos * direction.x - sin * direction.y, sin * direction.x + cos * direction.y);
+    }
+
+    IEnumerator IncreaseProjectileScale(GameObject projectile)
+    {
+        // Comprobamos si el proyectil es null antes de continuar
+        if (projectile == null)
+        {
+            yield break; // Si el proyectil no existe, salimos de la coroutine
+        }
+        else
+        {
+            float timePassed = 0f;
+            Vector3 initialScale = projectile.transform.localScale;
+
+            // Seguimos incrementando el tamaño del proyectil mientras dure el ataque
+            while (timePassed < attackDuration)
+            {
+                // Verificamos si el proyectil ha sido destruido
+                if (projectile == null)
+                {
+                    yield break; // Si el proyectil ya no existe, salimos de la coroutine
+                }
+
+                timePassed += Time.deltaTime;
+                float scaleMultiplier = 1 + (timePassed * sizeIncreaseRate); // Incremento en escala
+                projectile.transform.localScale = initialScale * scaleMultiplier;
+
+                yield return null;
+            }
+        }
+    }
+
 
     #endregion
 
@@ -182,6 +233,7 @@ public class Gravestone2 : MonoBehaviour
 
     #endregion
 
+    // Método Initialize para asignar el transform del jugador manualmente si es necesario
     public void Initialize(Transform player)
     {
         playerTransform = player;

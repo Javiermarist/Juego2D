@@ -178,10 +178,10 @@ public class Wizard1 : MonoBehaviour
                 Debug.LogError("No se encontró el script PlayerInfo en el jugador.");
             }
 
-            // Desactivar el collider para permitir que el jugador lo atraviese
+            // Desactivar el collider del enemigo (Wizard1) para que el jugador no lo golpee más
             if (wizardCollider != null)
             {
-                wizardCollider.enabled = false;  // Desactiva el collider
+                wizardCollider.enabled = false;  // Desactiva el collider del enemigo
             }
 
             // Llamar al efecto de desvanecimiento y destrucción
@@ -193,7 +193,7 @@ public class Wizard1 : MonoBehaviour
     {
         if (wizardCollider != null)
         {
-            wizardCollider.enabled = false;
+            wizardCollider.enabled = false;  // Desactiva el collider del enemigo (si no lo has hecho ya)
         }
 
         if (wizardSpriteRenderer != null)
@@ -211,7 +211,7 @@ public class Wizard1 : MonoBehaviour
             }
         }
 
-        Destroy(gameObject);
+        Destroy(gameObject);  // Destruye el objeto cuando termina el efecto de desvanecimiento
     }
 
     #endregion
