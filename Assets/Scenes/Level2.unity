@@ -9622,14 +9622,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61dc8e9f8bc9b8844bb587f53205ec4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTransform: {fileID: 217213233496521471}
+  playerTransform: {fileID: 2010063661}
   enemies:
   - {fileID: 457994895368451306, guid: 2ebfc5b647fdf0f438878384e41f6673, type: 3}
   - {fileID: 3394771100534378660, guid: 465ed25033de69a4d8e07ece7e4ccc19, type: 3}
   - {fileID: 453016423478879506, guid: 297973d5ccea6b04198f779d3c15749b, type: 3}
   - {fileID: 6187287449191030224, guid: 9bf504290a04ae349bdd149f269c7abe, type: 3}
   enemyWeights:
-  - 2
+  - 1
   - 2
   - 2
   - 3
@@ -9646,6 +9646,12 @@ MonoBehaviour:
   enemyCountText: {fileID: 205389617}
   pauseMenuCanvas: {fileID: 911893447}
   endGameCanvas: {fileID: 1108306049}
+--- !u!4 &2010063661 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4036589329447377956, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4617034293632450272}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2100245532
 GameObject:
   m_ObjectHideFlags: 0
@@ -9780,12 +9786,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100245532}
   m_CullTransparentMesh: 1
---- !u!4 &217213233496521471 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9194995910388757565, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 4617034293632450272}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4617034293632450272
 PrefabInstance:
   m_ObjectHideFlags: 0

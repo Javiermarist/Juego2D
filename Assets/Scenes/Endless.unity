@@ -8532,7 +8532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857741c2a8b026443a79eabb5ac92fe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTransform: {fileID: 217213233496521471}
+  playerTransform: {fileID: 2072193711}
   enemies:
   - {fileID: 457994895368451306, guid: e85416e0d4f202d468ec9380ef72a3ea, type: 3}
   - {fileID: 3394771100534378660, guid: 7231d3b8de5fb794897c805700ab8fce, type: 3}
@@ -8967,9 +8967,9 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &217213233496521471 stripped
+--- !u!4 &2072193711 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 9194995910388757565, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+  m_CorrespondingSourceObject: {fileID: 4036589329447377956, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
     type: 3}
   m_PrefabInstance: {fileID: 4617034293632450272}
   m_PrefabAsset: {fileID: 0}

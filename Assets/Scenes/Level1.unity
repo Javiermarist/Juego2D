@@ -366,6 +366,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 780947742}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &322602832 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4036589329447377956, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4617034293632450272}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &424080606
 GameObject:
   m_ObjectHideFlags: 0
@@ -9157,7 +9163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61dc8e9f8bc9b8844bb587f53205ec4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTransform: {fileID: 217213233496521471}
+  playerTransform: {fileID: 322602832}
   enemies:
   - {fileID: 457994895368451306, guid: 816613227a512e24d9b1202db90d0b74, type: 3}
   - {fileID: 3394771100534378660, guid: 7fbd8dbbdb4f03b44b361f62962d11c8, type: 3}
@@ -9710,12 +9716,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2103933215}
   m_CullTransparentMesh: 1
---- !u!4 &217213233496521471 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9194995910388757565, guid: 749dc15db0b8f8d4b9fc1fb1ae2579a7,
-    type: 3}
-  m_PrefabInstance: {fileID: 4617034293632450272}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4617034293632450272
 PrefabInstance:
   m_ObjectHideFlags: 0
