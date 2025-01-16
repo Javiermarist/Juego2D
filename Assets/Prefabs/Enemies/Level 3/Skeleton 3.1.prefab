@@ -105,6 +105,9 @@ MonoBehaviour:
   moveSpeed: 5
   pauseTime: 1
   damage: 1
+  lifePrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
+    type: 3}
+  lifeDropProbability: 0.5
 --- !u!95 &578614204915420613
 Animator:
   serializedVersion: 5

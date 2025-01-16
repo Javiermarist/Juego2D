@@ -12,17 +12,23 @@ public class LayerController : MonoBehaviour
         int wallLayer = LayerMask.NameToLayer("Wall");
         int attackLayer = LayerMask.NameToLayer("Attack");
         int floorLayer = LayerMask.NameToLayer("Floor");
+        int lifeLayer = LayerMask.NameToLayer("Life");
 
         Debug.Log("Configurando colisiones de capas...");
+
+        // Configurar colisiones entre Player y Life
+        Physics2D.IgnoreLayerCollision(playerLayer, lifeLayer, false);
 
         Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
         Physics2D.IgnoreLayerCollision(enemyLayer, playerLayer, false);
         Physics2D.IgnoreLayerCollision(enemyLayer, wallLayer, false);
+        Physics2D.IgnoreLayerCollision(enemyLayer, lifeLayer, true);
 
         Physics2D.IgnoreLayerCollision(immortalLayer, enemyLayer, true);
         Physics2D.IgnoreLayerCollision(immortalLayer, attackLayer, true);
         Physics2D.IgnoreLayerCollision(immortalLayer, playerLayer, false);
         Physics2D.IgnoreLayerCollision(immortalLayer, wallLayer, false);
+        Physics2D.IgnoreLayerCollision(immortalLayer, lifeLayer, false);
 
         for (int i = 0; i < 32; i++)
         {

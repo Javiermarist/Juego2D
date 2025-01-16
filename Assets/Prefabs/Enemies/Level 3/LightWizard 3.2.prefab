@@ -187,7 +187,10 @@ MonoBehaviour:
   projectileSpeed: 10
   damage: 1
   numberOfProjectiles: 4
-  spreadAngle: 30
+  spreadAngle: 35
+  lifePrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
+    type: 3}
+  lifeDropProbability: 0.5
 --- !u!1 &2850109213381958123
 GameObject:
   m_ObjectHideFlags: 0

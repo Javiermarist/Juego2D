@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour
 {
-    private PlayerInfo playerInfo;
+    private PlayerControler playerControler;  // Cambié de PlayerInfo a PlayerController
     private Transform playerTransform;
 
     public float lifetime = 5f; // Tiempo de vida del proyectil en segundos
@@ -19,18 +19,17 @@ public class Fireball : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            // Inicializar playerInfo si no está asignado previamente
-            if (playerInfo == null)
+            // Inicializar playerController si no está asignado previamente
+            if (playerControler == null)
             {
-                playerInfo = collision.collider.GetComponent<PlayerInfo>();
+                playerControler = collision.collider.GetComponent<PlayerControler>();
             }
 
-            if (playerInfo != null)
+            if (playerControler != null)
             {
-                // Aquí puedes manejar la interacción con el jugador, como aplicar daño
-                Debug.Log($"El proyectil golpeó al jugador. Salud restante: {playerInfo.health}");
-                // Ejemplo de aplicar daño al jugador:
-                playerInfo.health -= 10; // Ajusta el valor según el daño que debería causar la fireball
+                // Llamar al método TakeDamage directamente
+                playerControler.TakeDamage();  // Ajusta el valor según el daño que debería causar la fireball
+                Debug.Log("La fireball golpeó al jugador.");
             }
         }
 

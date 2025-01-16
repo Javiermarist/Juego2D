@@ -14,6 +14,9 @@ public class Wizard1 : MonoBehaviour
     public GameObject projectilePrefab;
     public Transform attackPoint;
 
+    public GameObject heartPrefab; // Prefab del corazón que puede soltar
+    public float heartDropProbability = 0.5f; // Probabilidad de soltar un corazón (33%)
+
     public float attackInterval;
     public float proyectileSpeed;
     public int damage;
@@ -26,7 +29,7 @@ public class Wizard1 : MonoBehaviour
 
         wizardSpriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        wizardCollider = GetComponent<Collider2D>();  // Mantén el collider si decides usarlo en otras partes
+        wizardCollider = GetComponent<Collider2D>();
 
         if (wizardSpriteRenderer == null)
         {
@@ -54,39 +57,6 @@ public class Wizard1 : MonoBehaviour
     }
 
     #region Start Attacking
-
-    // Comentamos el código que activaba el ataque cuando el jugador entraba al rango
-    /*
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerTransform = other.transform;
-            Debug.Log("Jugador ha entrado en el rango de ataque.");
-
-            if (attackCoroutine == null)
-            {
-                attackCoroutine = StartCoroutine(AttackRepeatedly(other.transform));
-            }
-        }
-    }
-    */
-
-    // Comentamos el código que desactivaba el ataque cuando el jugador salía del rango
-    /*
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            Debug.Log("Jugador ha salido del rango de ataque.");
-            if (attackCoroutine != null)
-            {
-                StopCoroutine(attackCoroutine);
-                attackCoroutine = null;
-            }
-        }
-    }
-    */
 
     void Update()
     {
@@ -134,10 +104,7 @@ public class Wizard1 : MonoBehaviour
     {
         if (projectilePrefab != null && attackPoint != null)
         {
-            // Instanciamos el proyectil
             GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
-
-            // Asignamos el proyectil como hijo del Wizard1
             projectile.transform.SetParent(transform);
 
             Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
@@ -172,19 +139,19 @@ public class Wizard1 : MonoBehaviour
             {
                 playerInfo.health -= damage;
                 Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
+
+                // Llamar al método TakeDamage del jugador para reproducir el sonido y la animación
+                PlayerControler playerControler = collision.collider.GetComponent<PlayerControler>();
+                if (playerControler != null)
+                {
+                    playerControler.TakeDamage();
+                }
             }
             else
             {
                 Debug.LogError("No se encontró el script PlayerInfo en el jugador.");
             }
 
-            // Desactivar el collider del enemigo (Wizard1) para que el jugador no lo golpee más
-            if (wizardCollider != null)
-            {
-                wizardCollider.enabled = false;  // Desactiva el collider del enemigo
-            }
-
-            // Llamar al efecto de desvanecimiento y destrucción
             StartCoroutine(FadeOutAndDestroy());
         }
     }
@@ -193,7 +160,7 @@ public class Wizard1 : MonoBehaviour
     {
         if (wizardCollider != null)
         {
-            wizardCollider.enabled = false;  // Desactiva el collider del enemigo (si no lo has hecho ya)
+            wizardCollider.enabled = false;  // Desactiva el collider del enemigo
         }
 
         if (wizardSpriteRenderer != null)
@@ -211,12 +178,24 @@ public class Wizard1 : MonoBehaviour
             }
         }
 
+        TryDropHeart(); // Intentar soltar un corazón al morir
         Destroy(gameObject);  // Destruye el objeto cuando termina el efecto de desvanecimiento
     }
 
     #endregion
 
-    // Método Initialize para asignar el Transform del jugador
+    #region Drop Heart
+
+    private void TryDropHeart()
+    {
+        if (heartPrefab != null && Random.value <= heartDropProbability)
+        {
+            Instantiate(heartPrefab, transform.position, Quaternion.identity);
+        }
+    }
+
+    #endregion
+
     public void Initialize(Transform player)
     {
         playerTransform = player;

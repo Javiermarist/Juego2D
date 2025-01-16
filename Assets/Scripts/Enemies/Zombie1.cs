@@ -22,6 +22,10 @@ public class Zombie1 : MonoBehaviour
 
     private Collider2D[] nearbyEnemies;
 
+    // Nueva variable para la caída de vida
+    public GameObject lifePrefab; // Prefab de vida
+    public float lifeDropProbability = 0.5f; // Probabilidad de que caiga vida al morir
+
     #endregion
 
     void Start()
@@ -113,6 +117,12 @@ public class Zombie1 : MonoBehaviour
             {
                 playerInfo.health -= damage;
                 Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
+
+                PlayerControler playerControler = collision.collider.GetComponent<PlayerControler>();
+                if (playerControler != null)
+                {
+                    playerControler.TakeDamage();
+                }
             }
             else
             {
@@ -147,6 +157,13 @@ public class Zombie1 : MonoBehaviour
         else
         {
             Debug.LogWarning("No se asignó una animación de muerte o el Animator es nulo.");
+        }
+
+        // Caída de vida con probabilidad
+        if (lifePrefab != null && Random.value <= lifeDropProbability)
+        {
+            Instantiate(lifePrefab, transform.position, Quaternion.identity);
+            Debug.Log("El zombie ha soltado vida");
         }
 
         Destroy(gameObject);

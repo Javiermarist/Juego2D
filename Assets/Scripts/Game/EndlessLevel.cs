@@ -138,6 +138,19 @@ public class EndlessLevel : MonoBehaviour
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0 : 1;
 
+        // Pausar o reanudar la música de fondo
+        if (AudioManager.Instance != null)
+        {
+            if (isPaused)
+            {
+                AudioManager.Instance.PauseBackgroundMusic();
+            }
+            else
+            {
+                AudioManager.Instance.ResumeBackgroundMusic();
+            }
+        }
+
         // Detener o reactivar los scripts de los enemigos
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
@@ -168,6 +181,7 @@ public class EndlessLevel : MonoBehaviour
         Debug.Log(isPaused ? "Juego pausado" : "Juego reanudado");
     }
 
+
     public void ResumeGame()
     {
         TogglePause(); // Llamar a TogglePause() para reanudar el juego
@@ -177,6 +191,14 @@ public class EndlessLevel : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1; // Asegúrate de que el tiempo se restaure
+
+        // Reiniciar la música
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopBackgroundMusic();
+            AudioManager.Instance.PlayBackgroundMusic();
+        }
+
         string currentSceneName = SceneManager.GetActiveScene().name; // Obtener el nombre de la escena actual
         SceneManager.LoadScene(currentSceneName); // Recargar la escena actual
     }

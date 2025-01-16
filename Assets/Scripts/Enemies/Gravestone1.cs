@@ -9,7 +9,6 @@ public class Gravestone1 : MonoBehaviour
     private Transform playerTransform;
     private SpriteRenderer gravestoneSpriteRenderer;
     private PlayerInfo playerInfo;
-
     private Animator animator;
     private Collider2D gravestoneCollider;
 
@@ -21,6 +20,10 @@ public class Gravestone1 : MonoBehaviour
     public float attackDuration;
     public float projectileSpeed;
     public int damage;
+
+    [Header("Life Drop Settings")]
+    public GameObject lifePrefab; // Prefab de vida que puede soltar
+    public float lifeDropProbability = 0.5f; // Probabilidad de soltar vida (1/2)
 
     #endregion
 
@@ -142,7 +145,6 @@ public class Gravestone1 : MonoBehaviour
         }
     }
 
-
     #endregion
 
     void Update()
@@ -171,6 +173,12 @@ public class Gravestone1 : MonoBehaviour
             if (playerInfo != null)
             {
                 playerInfo.health -= damage;
+                // Llamar al método TakeDamage del jugador para reproducir el sonido y la animación
+                PlayerControler playerController = collision.collider.GetComponent<PlayerControler>();
+                if (playerController != null)
+                {
+                    playerController.TakeDamage();
+                }
             }
             StartCoroutine(HandleDeath());
         }
@@ -191,6 +199,13 @@ public class Gravestone1 : MonoBehaviour
         {
             animator.Play(deathAnimation.name);
             yield return new WaitForSeconds(deathAnimation.length);
+        }
+
+        // Determinar si se debe soltar el prefab de vida
+        if (lifePrefab != null && Random.value <= lifeDropProbability)
+        {
+            Instantiate(lifePrefab, transform.position, Quaternion.identity);
+            Debug.Log("¡La tumba ha soltado vida!");
         }
 
         Destroy(gameObject);

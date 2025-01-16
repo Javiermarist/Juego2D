@@ -105,6 +105,9 @@ MonoBehaviour:
   damage: 1
   repulsionRadius: 1
   repulsionStrength: 0.5
+  lifePrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
+    type: 3}
+  lifeDropProbability: 0.5
 --- !u!95 &3044318302741619464
 Animator:
   serializedVersion: 5

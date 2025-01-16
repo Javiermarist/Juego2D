@@ -288,6 +288,9 @@ MonoBehaviour:
   projectilePrefab: {fileID: 5288095302968148412, guid: 6f4daf8c0d982644989d6c78d683bfd1,
     type: 3}
   attackPoint: {fileID: 2977702363134582719}
+  heartPrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
+    type: 3}
+  heartDropProbability: 0.5
   attackInterval: 2
   proyectileSpeed: 9
   damage: 1

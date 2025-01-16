@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1957522413902321852}
+  - component: {fileID: 2033086908016983331}
   - component: {fileID: 2355187005733403330}
   - component: {fileID: 4007465991441844705}
   - component: {fileID: 8060544820482909469}
-  - component: {fileID: 2033086908016983331}
   - component: {fileID: 7852700950888243751}
   m_Layer: 7
   m_Name: Gravestone 3.1
@@ -37,6 +37,29 @@ Transform:
   - {fileID: 7761779449994983362}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2033086908016983331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6187287449191030224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85afcf5b275215d4b930903d9d427993, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 2079514826541556394, guid: 2acb3b8ed2961d240bc6e3fe1eb94534,
+    type: 3}
+  attackPoint: {fileID: 7761779449994983362}
+  deathAnimation: {fileID: 7400000, guid: 4d7eda0ae2ab73641b23c780d65d884a, type: 2}
+  attackInterval: 1
+  attackDuration: 2
+  projectileSpeed: 7
+  damage: 1
+  lifePrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
+    type: 3}
+  lifeDropProbability: 0.5
 --- !u!212 &2355187005733403330
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -155,26 +178,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.0030111, y: 0.94390523}
   m_EdgeRadius: 0
---- !u!114 &2033086908016983331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6187287449191030224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85afcf5b275215d4b930903d9d427993, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 2079514826541556394, guid: 2acb3b8ed2961d240bc6e3fe1eb94534,
-    type: 3}
-  attackPoint: {fileID: 7761779449994983362}
-  deathAnimation: {fileID: 7400000, guid: 4d7eda0ae2ab73641b23c780d65d884a, type: 2}
-  attackInterval: 1
-  attackDuration: 3
-  projectileSpeed: 7
-  damage: 1
 --- !u!58 &7852700950888243751
 CircleCollider2D:
   m_ObjectHideFlags: 0

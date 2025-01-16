@@ -27,6 +27,10 @@ public class Gravestone2 : MonoBehaviour
     public float spreadAngle = 40f; // Ángulo de dispersión de los proyectiles
     public float sizeIncreaseRate = 0.1f; // Cuánto aumentará el tamaño del proyectil por segundo
 
+    // Agregar esto dentro de la corutina HandleDeath:
+    public GameObject lifePrefab; // Prefab de vida
+    public float lifeDropProbability = 0.5f; // Probabilidad de caer vida (50%)
+
     #endregion
 
     void Start()
@@ -46,6 +50,31 @@ public class Gravestone2 : MonoBehaviour
         }
 
         #endregion
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            if (playerInfo != null)
+            {
+                playerInfo.health -= damage;
+                Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
+
+                // Llamar al método TakeDamage del jugador para reproducir el sonido y la animación
+                PlayerControler playerControler = collision.collider.GetComponent<PlayerControler>();
+                if (playerControler != null)
+                {
+                    playerControler.TakeDamage();
+                }
+            }
+            else
+            {
+                Debug.LogError("No se encontró el script PlayerInfo en el jugador.");
+            }
+
+            StartCoroutine(HandleDeath());
+        }
     }
 
     #region Player Detection
@@ -90,7 +119,6 @@ public class Gravestone2 : MonoBehaviour
             yield return new WaitForSeconds(attackInterval);
         }
     }
-
     void SpawnProjectiles(Vector2 playerPosition)
     {
         // Dispara el proyectil central directamente hacia el jugador
@@ -115,9 +143,6 @@ public class Gravestone2 : MonoBehaviour
     GameObject InstantiateProjectile(Vector2 playerPosition, float angle)
     {
         GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
-
-        // No asignamos el enemigo como el padre del proyectil
-        // projectile.transform.SetParent(transform); // Eliminar esta línea
 
         // Calcular la dirección hacia el jugador
         Vector2 directionToPlayer = (playerPosition - (Vector2)attackPoint.position).normalized;
@@ -177,7 +202,6 @@ public class Gravestone2 : MonoBehaviour
         }
     }
 
-
     #endregion
 
     void Update()
@@ -197,22 +221,6 @@ public class Gravestone2 : MonoBehaviour
         #endregion
     }
 
-    #region Damage Player on Collision and Dies
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.collider.CompareTag("Player"))
-        {
-            if (playerInfo != null)
-            {
-                playerInfo.health -= damage;
-            }
-            StartCoroutine(HandleDeath());
-        }
-    }
-
-    #endregion
-
     #region Enemy Death
 
     private IEnumerator HandleDeath()
@@ -226,6 +234,13 @@ public class Gravestone2 : MonoBehaviour
         {
             animator.Play(deathAnimation.name);
             yield return new WaitForSeconds(deathAnimation.length);
+        }
+
+        // Determinar si se debe soltar el prefab de vida
+        if (lifePrefab != null && Random.value <= lifeDropProbability)
+        {
+            Instantiate(lifePrefab, transform.position, Quaternion.identity);
+            Debug.Log("¡La tumba ha soltado vida!");
         }
 
         Destroy(gameObject);

@@ -21,6 +21,10 @@ public class Wizard2 : MonoBehaviour
     public int numberOfProjectiles = 5; // Número de proyectiles
     public float spreadAngle = 40f; // Ángulo de dispersión total
 
+    [Header("Life Drop Settings")]
+    public GameObject lifePrefab; // Prefab de vida que puede soltar
+    public float lifeDropProbability = 0.5f; // Probabilidad de soltar vida (1/2)
+
     #endregion
 
     void Start()
@@ -54,47 +58,6 @@ public class Wizard2 : MonoBehaviour
             attackCoroutine = StartCoroutine(AttackRepeatedly(playerTransform));
         }
     }
-
-    #region Start Attacking
-
-    // Comentamos el código que activaba el ataque cuando el jugador entraba al rango
-    /*
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerTransform = other.transform;
-            Debug.Log("Jugador ha entrado en el rango de ataque.");
-
-            if (attackCoroutine == null)
-            {
-                attackCoroutine = StartCoroutine(AttackRepeatedly(other.transform));
-            }
-        }
-    }
-    */
-
-    #endregion
-
-    #region Stop Attacking
-
-    // Comentamos el código que desactivaba el ataque cuando el jugador salía del rango
-    /*
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            Debug.Log("Jugador ha salido del rango de ataque.");
-            if (attackCoroutine != null)
-            {
-                StopCoroutine(attackCoroutine);
-                attackCoroutine = null;
-            }
-        }
-    }
-    */
-
-    #endregion
 
     #region Generates Attack
 
@@ -159,9 +122,6 @@ public class Wizard2 : MonoBehaviour
         // Rotar el proyectil para que apunte en la dirección correcta
         projectile.transform.rotation = Quaternion.Euler(0, 0, adjustedAngle - 90);
 
-        // Pasamos el transform al proyectil
-        projectile.GetComponent<Fireball>().Initialize(playerTransform);
-
         return projectile;
     }
 
@@ -198,6 +158,13 @@ public class Wizard2 : MonoBehaviour
             {
                 playerInfo.health -= damage;
                 Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
+
+                // Llamar al método TakeDamage del jugador para reproducir el sonido y la animación
+                PlayerControler playerControler = collision.collider.GetComponent<PlayerControler>();
+                if (playerControler != null)
+                {
+                    playerControler.TakeDamage();
+                }
             }
             else
             {
@@ -228,6 +195,13 @@ public class Wizard2 : MonoBehaviour
                 wizardSpriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
                 yield return null;
             }
+        }
+
+        // Determinar si se debe soltar el prefab de vida
+        if (lifePrefab != null && Random.value <= lifeDropProbability)
+        {
+            Instantiate(lifePrefab, transform.position, Quaternion.identity);
+            Debug.Log("¡El enemigo ha soltado vida!");
         }
 
         Destroy(gameObject);

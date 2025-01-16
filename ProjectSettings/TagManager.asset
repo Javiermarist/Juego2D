@@ -10,6 +10,7 @@ TagManager:
   - Floor
   - Enemy
   - Attack
+  - Life
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - Floor
   - Invulnerable
   - Immortal
-  - 
+  - Life
   - 
   - 
   - 
@@ -64,4 +65,7 @@ TagManager:
     locked: 0
   - name: Enemy2
     uniqueID: 3198788505
+    locked: 0
+  - name: Life
+    uniqueID: 1032613157
     locked: 0

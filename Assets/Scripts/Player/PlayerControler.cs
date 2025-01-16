@@ -1,6 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerControler : MonoBehaviour
 {
@@ -10,20 +10,25 @@ public class PlayerControler : MonoBehaviour
     private Vector2 movement;
     private Animator animator;
 
-    public float moveSpeed;              // Velocidad normal del jugador
-    public float immortalityDuration;    // Duración de la invencibilidad
-    public float immortalityCooldown;    // Cooldown de la invencibilidad
+    public float moveSpeed;
+    public float immortalityDuration;
+    public float immortalityCooldown;
 
-    private bool isImmortal = false;     // Indica si el jugador es inmortal
-    private bool canActivateImmortality = true; // Indica si puede activar la inmortalidad
-    private LayerMask originalLayer;     // Capa original del jugador
+    private bool isImmortal = false;
+    private bool canActivateImmortality = true;
+    private LayerMask originalLayer;
 
     private SpriteRenderer spriteRenderer;
-    private Color originalColor;         // Color original del sprite del jugador
+    private Color originalColor;
 
-    private float originalMoveSpeed;     // Velocidad original antes de la invencibilidad
+    private float originalMoveSpeed;
 
-    private Vector2 lastDirection = Vector2.zero; // Última dirección válida
+    private Vector2 lastDirection = Vector2.zero;
+
+    public Image spaceBarImage;
+    private Vector3 originalImageScale;
+
+    private AudioManager audioManager;  // Referencia al AudioManager
 
     #endregion
 
@@ -36,44 +41,35 @@ public class PlayerControler : MonoBehaviour
         originalLayer = gameObject.layer;
         originalColor = spriteRenderer.color;
 
-        originalMoveSpeed = moveSpeed; // Guardar la velocidad original
+        originalMoveSpeed = moveSpeed;
+
+        if (spaceBarImage != null)
+        {
+            originalImageScale = spaceBarImage.transform.localScale;
+        }
+
+        // Buscar el AudioManager en la escena
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     void Update()
     {
-        // Capturar las entradas del jugador
+        // Entradas de movimiento del jugador
         float moveX = 0;
         float moveY = 0;
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            moveX = -1;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            moveX = 1;
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            moveY = 1;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            moveY = -1;
-        }
+        if (Input.GetKey(KeyCode.A)) moveX = -1;
+        if (Input.GetKey(KeyCode.D)) moveX = 1;
+        if (Input.GetKey(KeyCode.W)) moveY = 1;
+        if (Input.GetKey(KeyCode.S)) moveY = -1;
 
-        // Normalizar el vector de movimiento para evitar velocidades mayores en movimiento diagonal
         movement = new Vector2(moveX, moveY).normalized;
 
-        // Calcular la velocidad actual basada en el movimiento
         float currentSpeed = movement.magnitude * moveSpeed;
-
-        // Actualizar los parámetros del Animator
         animator.SetFloat("X", movement.x);
         animator.SetFloat("Y", movement.y);
         animator.SetFloat("Speed", currentSpeed);
 
-        // Voltear el sprite si se mueve hacia la izquierda o derecha
         if (movement.x < 0)
         {
             spriteRenderer.flipX = true;
@@ -83,52 +79,114 @@ public class PlayerControler : MonoBehaviour
             spriteRenderer.flipX = false;
         }
 
-        // Iniciar invencibilidad al presionar espacio, solo si no está en cooldown
         if (Input.GetKeyDown(KeyCode.Space) && canActivateImmortality && !isImmortal)
         {
             StartCoroutine(ActivateImmortality());
+            if (spaceBarImage != null)
+            {
+                StartCoroutine(AnimateSpaceBarImage());
+            }
+        }
+
+        if (spaceBarImage != null)
+        {
+            if (!canActivateImmortality)
+            {
+                spaceBarImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Oscurecer
+            }
+            else
+            {
+                spaceBarImage.color = new Color(1f, 1f, 1f, 1f); // Color original
+            }
         }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        // Aplicar movimiento al jugador
         playerRb.velocity = movement * moveSpeed;
     }
-
-
 
     #region Invincibility
 
     private IEnumerator ActivateImmortality()
     {
         isImmortal = true;
-        canActivateImmortality = false; // Bloquear activación hasta que pase el cooldown
+        canActivateImmortality = false;
 
-        // Aumentar la velocidad del jugador
         moveSpeed += 3f;
-
-        // Cambiar la capa del jugador para evitar colisiones con enemigos
         gameObject.layer = LayerMask.NameToLayer("Immortal");
-
-        // Cambiar el color del sprite para indicar invencibilidad
         spriteRenderer.color = new Color(originalColor.r * 0.5f, originalColor.g * 0.5f, originalColor.b * 0.5f, originalColor.a);
 
-        // Esperar la duración de la invencibilidad
         yield return new WaitForSeconds(immortalityDuration);
 
-        // Restaurar el estado original
         isImmortal = false;
         gameObject.layer = originalLayer;
         spriteRenderer.color = originalColor;
-
-        // Restaurar la velocidad original
         moveSpeed = originalMoveSpeed;
 
-        // Cooldown antes de permitir otra activación
         yield return new WaitForSeconds(immortalityCooldown);
         canActivateImmortality = true;
     }
 
     #endregion
+
+    private IEnumerator AnimateSpaceBarImage()
+    {
+        spaceBarImage.transform.localScale = new Vector3(originalImageScale.x * 0.8f, originalImageScale.y * 0.8f, originalImageScale.z);
+        yield return new WaitForSeconds(0.1f);
+        spaceBarImage.transform.localScale = originalImageScale;
+    }
+
+    // Método para aplicar daño, reproducir sonido y cambiar el color del jugador
+    public void TakeDamage()
+    {
+        if (isImmortal) return; // No recibe daño si es inmortal
+
+        // Aquí podrías reducir la vida del jugador, por ejemplo:
+        // health -= damage;
+
+        // Reproducir sonido de golpe
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySound(AudioManager.Instance.hitSound);  // Reproducir el sonido de golpe
+        }
+
+        // Cambiar el color del jugador a rojo temporalmente
+        if (spriteRenderer != null)
+        {
+            StartCoroutine(ChangeColorOnHit()); // Llamar la corutina para cambiar el color
+        }
+
+        // Desactivar colisiones con capas que no sean Life ni Wall
+        StartCoroutine(DisableCollisions());
+    }
+
+    // Corutina para cambiar el color del jugador a rojo y luego restaurarlo
+    private IEnumerator ChangeColorOnHit()
+    {
+        // Cambiar el color del jugador a rojo
+        spriteRenderer.color = Color.red;
+
+        // Esperar un breve tiempo (ejemplo: 0.1 segundos)
+        yield return new WaitForSeconds(0.1f);
+
+        // Restaurar el color original del jugador
+        spriteRenderer.color = originalColor;
+    }
+
+    // Corutina para desactivar temporalmente las colisiones con capas no deseadas
+    private IEnumerator DisableCollisions()
+    {
+        // Guardar la capa original del jugador
+        LayerMask currentLayer = gameObject.layer;
+
+        // Cambiar la capa del jugador a una que no colisione con las demás
+        gameObject.layer = LayerMask.NameToLayer("NoCollide");
+
+        // Esperar un breve tiempo (por ejemplo, durante el tiempo de invulnerabilidad)
+        yield return new WaitForSeconds(immortalityDuration);
+
+        // Restaurar la capa original del jugador
+        gameObject.layer = currentLayer;
+    }
 }

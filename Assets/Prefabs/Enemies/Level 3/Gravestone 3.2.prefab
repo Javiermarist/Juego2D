@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4065663546248048314}
+  - component: {fileID: 3929550432813369929}
   - component: {fileID: 209728182148360569}
   - component: {fileID: 5738309084082717144}
   - component: {fileID: 1768709421435193616}
-  - component: {fileID: 3929550432813369929}
   - component: {fileID: 9041408378588218223}
   m_Layer: 7
   m_Name: Gravestone 3.2
@@ -37,6 +37,32 @@ Transform:
   - {fileID: 4412741164498688459}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3929550432813369929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2373115574219131876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 751f4acaf72c79a419ae5bcba789f278, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 66074200365641716, guid: 4cf514350361d33459ec08797db309f8,
+    type: 3}
+  attackPoint: {fileID: 4412741164498688459}
+  deathAnimation: {fileID: 7400000, guid: 4d7eda0ae2ab73641b23c780d65d884a, type: 2}
+  attackInterval: 1
+  attackDuration: 2
+  projectileSpeed: 8
+  damage: 1
+  numberOfProjectiles: 2
+  spreadAngle: 25
+  sizeIncreaseRate: 0.8
+  lifePrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
+    type: 3}
+  lifeDropProbability: 0.5
 --- !u!212 &209728182148360569
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -169,29 +195,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.0027026, y: 0.9477487}
   m_EdgeRadius: 0
---- !u!114 &3929550432813369929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2373115574219131876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 751f4acaf72c79a419ae5bcba789f278, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 66074200365641716, guid: 4cf514350361d33459ec08797db309f8,
-    type: 3}
-  attackPoint: {fileID: 4412741164498688459}
-  deathAnimation: {fileID: 7400000, guid: 4d7eda0ae2ab73641b23c780d65d884a, type: 2}
-  attackInterval: 1
-  attackDuration: 3
-  projectileSpeed: 8
-  damage: 1
-  numberOfProjectiles: 2
-  spreadAngle: 25
-  sizeIncreaseRate: 1
 --- !u!95 &9041408378588218223
 Animator:
   serializedVersion: 5

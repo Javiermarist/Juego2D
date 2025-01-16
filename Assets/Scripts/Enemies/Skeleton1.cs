@@ -25,6 +25,9 @@ public class Skeleton1 : MonoBehaviour
 
     public int damage;
 
+    public GameObject lifePrefab; // Prefab de vida
+    public float lifeDropProbability = 0.5f; // Probabilidad de que caiga vida al morir
+
     #endregion
 
     private void Start()
@@ -134,6 +137,12 @@ public class Skeleton1 : MonoBehaviour
             {
                 playerInfo.health -= damage;
                 Debug.Log($"Daño infligido al jugador. Salud restante: {playerInfo.health}");
+
+                PlayerControler playerControler = collision.collider.GetComponent<PlayerControler>();
+                if (playerControler != null)
+                {
+                    playerControler.TakeDamage();
+                }
             }
             else
             {
@@ -161,9 +170,12 @@ public class Skeleton1 : MonoBehaviour
             animator.Play(deathAnimation.name);
             yield return new WaitForSeconds(deathAnimation.length);
         }
-        else
+
+        // Caída de vida con probabilidad
+        if (lifePrefab != null && Random.value <= lifeDropProbability)
         {
-            Debug.LogWarning("No se asignó una animación de muerte o el Animator es nulo.");
+            Instantiate(lifePrefab, transform.position, Quaternion.identity);
+            Debug.Log("El esqueleto ha soltado vida");
         }
 
         Destroy(gameObject);

@@ -88,10 +88,20 @@ public class GameController : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0;
 
+        PlayWinSound();
+
         // Mostrar el Canvas de fin del juego
         if (endGameCanvas != null)
         {
             endGameCanvas.SetActive(true);
+        }
+    }
+
+    private void PlayWinSound()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySound(AudioManager.Instance.winSound);
         }
     }
 
@@ -116,6 +126,7 @@ public class GameController : MonoBehaviour
 
     void TogglePause()
     {
+        PlaySelectSound();
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0 : 1;
 
@@ -128,6 +139,7 @@ public class GameController : MonoBehaviour
 
     public void ResumeGame()
     {
+        PlaySelectSound();
         isPaused = false;
         Time.timeScale = 1;
 
@@ -140,13 +152,23 @@ public class GameController : MonoBehaviour
 
     public void LoadNextLevel(string nextLevelName)
     {
+        PlaySelectSound();
         Time.timeScale = 1; // Asegurarse de que el tiempo esté restaurado antes de cambiar la escena
         SceneManager.LoadScene(nextLevelName);
     }
 
     public void GoToMainMenu(string sceneName)
     {
+        PlaySelectSound();
         Time.timeScale = 1; // Restaurar el tiempo antes de cambiar de escena
         SceneManager.LoadScene(sceneName);
+    }
+
+    private void PlaySelectSound()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySound(AudioManager.Instance.menuButtonSound);
+        }
     }
 }
