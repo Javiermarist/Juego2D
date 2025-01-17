@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour
     [Header("End Game Settings")]
     public GameObject endGameCanvas; // Referencia al Canvas de fin del juego
 
+    public AudioManager audioManager;
+
     private float timeRemaining;
     private bool isPaused = false;
     private float spawnTimer;
@@ -32,6 +34,17 @@ public class GameController : MonoBehaviour
     {
         timeRemaining = gameDuration;
         spawnTimer = spawnInterval;
+
+        audioManager = FindObjectOfType<AudioManager>();
+
+        /*// Comprobar y reproducir la música de fondo si no está activa
+                if (AudioManager.Instance != null)
+                {
+                    if (!AudioManager.Instance.IsBackgroundMusicPlaying())
+                    {
+                        //AudioManager.Instance.PlayBackgroundMusic();
+                    }
+                }*/
 
         // Asegurarse de que los Canvas estén desactivados al inicio
         if (pauseMenuCanvas != null)
@@ -101,7 +114,8 @@ public class GameController : MonoBehaviour
     {
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySound(AudioManager.Instance.winSound);
+            //AudioManager.Instance.PlaySound(AudioManager.Instance.winSound);
+            audioManager.winSoundSource.Play();
         }
     }
 
@@ -149,13 +163,53 @@ public class GameController : MonoBehaviour
             pauseMenuCanvas.SetActive(false);
         }
     }
+    public void RestartLevel()
+    {
+        // Restaurar el tiempo de juego
+        Time.timeScale = 1;
+
+        // Reiniciar la música
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopBackgroundMusic();
+            //AudioManager.Instance.PlayBackgroundMusic();
+        }
+
+        // Limpiar cualquier estado global o persistente (opcional)
+        ResetGlobalStates();
+
+        // Recargar la escena actual
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentSceneName);
+    }
+
+    // Método para restablecer estados globales o persistentes si es necesario
+    private void ResetGlobalStates()
+    {
+        // Por ejemplo, reiniciar estadísticas del jugador
+        PlayerInfo playerInfo = FindObjectOfType<PlayerInfo>();
+        if (playerInfo != null)
+        {
+            playerInfo.health = playerInfo.startingHealth; // Restablece la salud del jugador
+        }
+
+        // Reiniciar otros estados persistentes según tu juego
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var enemy in enemies)
+        {
+            Destroy(enemy); // Asegúrate de que no queden enemigos
+        }
+    }
 
     public void LoadNextLevel(string nextLevelName)
     {
         PlaySelectSound();
         Time.timeScale = 1; // Asegurarse de que el tiempo esté restaurado antes de cambiar la escena
+
+        // Recargar la escena, independientemente de que sea la misma o no
         SceneManager.LoadScene(nextLevelName);
     }
+
 
     public void GoToMainMenu(string sceneName)
     {
@@ -168,7 +222,8 @@ public class GameController : MonoBehaviour
     {
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySound(AudioManager.Instance.menuButtonSound);
+            //AudioManager.Instance.PlaySound(AudioManager.Instance.menuButtonSound);
+            audioManager.menuButtonSoundSource.Play();
         }
     }
 }

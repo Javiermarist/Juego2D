@@ -23,12 +23,17 @@ public class PlayerControler : MonoBehaviour
 
     private float originalMoveSpeed;
 
+    public PlayerInfo playerInfo; // Referencia al script PlayerInfo
+
     private Vector2 lastDirection = Vector2.zero;
 
     public Image spaceBarImage;
     private Vector3 originalImageScale;
 
+    public GameObject canvasDeath; // Canvas de muerte
+    public GameObject canvasHUD; // Canvas de muerte
     private AudioManager audioManager;  // Referencia al AudioManager
+    private bool hasDied = false; // Bandera para verificar si el jugador ya ha muerto
 
     #endregion
 
@@ -50,10 +55,22 @@ public class PlayerControler : MonoBehaviour
 
         // Buscar el AudioManager en la escena
         audioManager = FindObjectOfType<AudioManager>();
+
+        // Asegurarse de que el Canvas de muerte está desactivado al inicio
+        if (canvasDeath != null)
+        {
+            canvasDeath.SetActive(false);
+        }
     }
 
     void Update()
     {
+        if (playerInfo != null && playerInfo.health <= 0)
+        {
+            HandleDeath();
+            return;
+        }
+
         // Entradas de movimiento del jugador
         float moveX = 0;
         float moveY = 0;
@@ -137,56 +154,69 @@ public class PlayerControler : MonoBehaviour
         spaceBarImage.transform.localScale = originalImageScale;
     }
 
-    // Método para aplicar daño, reproducir sonido y cambiar el color del jugador
-    public void TakeDamage()
+    private void HandleDeath()
     {
-        if (isImmortal) return; // No recibe daño si es inmortal
+        if (hasDied) return; // Salir si ya se ha manejado la muerte
+        hasDied = true; // Marcar que el jugador ha muerto
 
-        // Aquí podrías reducir la vida del jugador, por ejemplo:
-        // health -= damage;
+        StopAllCoroutines(); // Detener todas las corrutinas
+        playerRb.velocity = Vector2.zero; // Detener el movimiento del jugador
 
-        // Reproducir sonido de golpe
+        // Pausar la música de fondo
+        if (audioManager != null)
+        {
+            audioManager.StopBackgroundMusic();
+        }
+
+        // Reproducir el sonido de perder solo una vez
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySound(AudioManager.Instance.hitSound);  // Reproducir el sonido de golpe
+            //AudioManager.Instance.PlaySound(AudioManager.Instance.loseSound);
+            audioManager.loseSoundSource.Play();
         }
 
-        // Cambiar el color del jugador a rojo temporalmente
+        // Desactivar todos los enemigos
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var enemy in enemies)
+        {
+            enemy.SetActive(false);
+        }
+
+        // Detener el tiempo del juego
+        Time.timeScale = 0;
+
+        // Activar el Canvas de muerte
+        canvasDeath.SetActive(true);
+        canvasHUD.SetActive(false);
+    }
+
+    public void TakeDamage()
+    {
+        if (isImmortal || playerInfo == null) return; // No recibe daño si es inmortal
+
+        // Si la salud llega a 0, manejar la muerte
+        if (playerInfo.health <= 0)
+        {
+            HandleDeath();
+            return;
+        }
+
+        if (audioManager != null)
+        {
+            //audioManager.PlaySound(audioManager.hitSound);
+            audioManager.hitSoundSource.Play();
+        }
+
         if (spriteRenderer != null)
         {
-            StartCoroutine(ChangeColorOnHit()); // Llamar la corutina para cambiar el color
+            StartCoroutine(ChangeColorOnHit());
         }
-
-        // Desactivar colisiones con capas que no sean Life ni Wall
-        StartCoroutine(DisableCollisions());
     }
 
-    // Corutina para cambiar el color del jugador a rojo y luego restaurarlo
     private IEnumerator ChangeColorOnHit()
     {
-        // Cambiar el color del jugador a rojo
         spriteRenderer.color = Color.red;
-
-        // Esperar un breve tiempo (ejemplo: 0.1 segundos)
         yield return new WaitForSeconds(0.1f);
-
-        // Restaurar el color original del jugador
         spriteRenderer.color = originalColor;
-    }
-
-    // Corutina para desactivar temporalmente las colisiones con capas no deseadas
-    private IEnumerator DisableCollisions()
-    {
-        // Guardar la capa original del jugador
-        LayerMask currentLayer = gameObject.layer;
-
-        // Cambiar la capa del jugador a una que no colisione con las demás
-        gameObject.layer = LayerMask.NameToLayer("NoCollide");
-
-        // Esperar un breve tiempo (por ejemplo, durante el tiempo de invulnerabilidad)
-        yield return new WaitForSeconds(immortalityDuration);
-
-        // Restaurar la capa original del jugador
-        gameObject.layer = currentLayer;
     }
 }

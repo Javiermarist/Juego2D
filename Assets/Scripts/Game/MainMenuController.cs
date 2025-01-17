@@ -9,12 +9,26 @@ public class MainMenuController : MonoBehaviour
     public string guideSceneName = "Guide"; // Nombre de la escena de la guía
     public string mainMenuSceneName = "MainMenu";
 
+    public AudioManager audioManager;
+
+    private void Start()
+    {
+        audioManager = FindFirstObjectByType<AudioManager>();
+    }
+
     // Método para cargar el nivel 1
+    // Método para cargar el nivel 1 y garantizar que todo se reinicie
     public void StartGame()
     {
         PlaySelectSound();
+
+        // Restaurar el tiempo de juego en caso de que esté pausado
+        Time.timeScale = 1;
+
+        // Cargar la escena del nivel 1
         SceneManager.LoadScene(level1SceneName);
     }
+
 
     // Método para cargar la escena de opciones
     public void OpenOptions()
@@ -48,9 +62,10 @@ public class MainMenuController : MonoBehaviour
     // Método para reproducir el sonido de selección
     private void PlaySelectSound()
     {
-        if (AudioManager.Instance != null)
+        if (audioManager != null)
         {
-            AudioManager.Instance.PlaySound(AudioManager.Instance.menuButtonSound);
+            audioManager.menuButtonSoundSource.Play();
+            //AudioManager.Instance.PlaySound(AudioManager.Instance.menuButtonSound);
         }
     }
 }

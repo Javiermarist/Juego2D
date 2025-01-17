@@ -190,18 +190,47 @@ public class EndlessLevel : MonoBehaviour
     // Función para reiniciar la escena actual
     public void RestartLevel()
     {
-        Time.timeScale = 1; // Asegúrate de que el tiempo se restaure
+        Time.timeScale = 1; // Asegurarse de que el tiempo esté restaurado
 
-        // Reiniciar la música
+        // Detener y reiniciar la música de fondo
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StopBackgroundMusic();
-            AudioManager.Instance.PlayBackgroundMusic();
+            //AudioManager.Instance.PlayBackgroundMusic();
         }
 
-        string currentSceneName = SceneManager.GetActiveScene().name; // Obtener el nombre de la escena actual
-        SceneManager.LoadScene(currentSceneName); // Recargar la escena actual
+        // Destruir todos los enemigos existentes
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var enemy in enemies)
+        {
+            Destroy(enemy); // Eliminar cada enemigo de la escena
+        }
+
+        // Reiniciar estadísticas del jugador (si aplica)
+        PlayerInfo playerInfo = FindObjectOfType<PlayerInfo>();
+        if (playerInfo != null)
+        {
+            playerInfo.health = playerInfo.startingHealth; // Reiniciar salud del jugador
+        }
+
+        // Reiniciar el temporizador y las variables relacionadas con el juego
+        elapsedTime = 0f; // Reiniciar el tiempo transcurrido
+        spawnTimer = spawnInterval; // Reiniciar el temporizador de spawn
+
+        // Resetear la posición del jugador (si es necesario)
+        if (playerTransform != null)
+        {
+            playerTransform.position = Vector3.zero; // Posición inicial o cualquier posición predeterminada
+        }
+
+        // Otras configuraciones específicas del nivel, si las hay
+        Debug.Log("Nivel reiniciado");
+
+        // Recargar la escena actual para asegurarte de que todo se reinicie correctamente
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentSceneName);
     }
+
 
     // Función para volver al menú principal
     public void GoToMainMenu()
