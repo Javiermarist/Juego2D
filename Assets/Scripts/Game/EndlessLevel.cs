@@ -163,19 +163,6 @@ public class EndlessLevel : MonoBehaviour
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0 : 1;
 
-        // Pausar o reanudar la música de fondo
-        if (AudioManager.Instance != null)
-        {
-            if (isPaused)
-            {
-                AudioManager.Instance.PauseBackgroundMusic();
-            }
-            else
-            {
-                AudioManager.Instance.ResumeBackgroundMusic();
-            }
-        }
-
         // Detener o reactivar los scripts de los enemigos
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
@@ -216,13 +203,6 @@ public class EndlessLevel : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1; // Asegurarse de que el tiempo esté restaurado
-
-        // Detener y reiniciar la música de fondo
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.StopBackgroundMusic();
-            //AudioManager.Instance.PlayBackgroundMusic();
-        }
 
         // Destruir todos los enemigos existentes
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");

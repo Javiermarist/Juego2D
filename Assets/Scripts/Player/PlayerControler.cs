@@ -162,12 +162,6 @@ public class PlayerControler : MonoBehaviour
         StopAllCoroutines(); // Detener todas las corrutinas
         playerRb.velocity = Vector2.zero; // Detener el movimiento del jugador
 
-        // Pausar la música de fondo
-        if (audioManager != null)
-        {
-            audioManager.StopBackgroundMusic();
-        }
-
         // Reproducir el sonido de perder solo una vez
         if (AudioManager.Instance != null)
         {

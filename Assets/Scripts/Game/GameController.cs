@@ -168,19 +168,18 @@ public class GameController : MonoBehaviour
         // Restaurar el tiempo de juego
         Time.timeScale = 1;
 
-        // Reiniciar la música
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.StopBackgroundMusic();
-            //AudioManager.Instance.PlayBackgroundMusic();
-        }
-
         // Limpiar cualquier estado global o persistente (opcional)
         ResetGlobalStates();
 
-        // Recargar la escena actual
+        // Recargar la escena actual sin afectar al AudioManager
         string currentSceneName = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(currentSceneName);
+
+        // Asegurarse de que el AudioManager persiste
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogWarning("AudioManager no está presente o ha sido destruido.");
+        }
     }
 
     // Método para restablecer estados globales o persistentes si es necesario

@@ -105,7 +105,6 @@ public class Wizard1 : MonoBehaviour
         if (projectilePrefab != null && attackPoint != null)
         {
             GameObject projectile = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
-            projectile.transform.SetParent(transform);
 
             Vector2 direction = (playerPosition - (Vector2)attackPoint.position).normalized;
 
