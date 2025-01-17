@@ -12,7 +12,14 @@ public class EndlessLevel : MonoBehaviour
     public float[] enemyWeights; // Pesos para cada enemigo (debe coincidir con el tamaño de enemies)
     public Transform[] enemyContainers;
 
-    public float spawnInterval = 5f; // Intervalo entre spawns de enemigos
+    [Header("Spawn Settings")]
+    public float spawnIntervalMax = 5f; // Intervalo máximo entre spawns de enemigos
+    public float spawnIntervalMin = 1f; // Intervalo mínimo entre spawns de enemigos
+    public float spawnIntervalDecrease = 0.25f; // Reducción del intervalo cada 3 segundos
+    public float decreaseInterval = 3f; // Tiempo entre cada disminución
+    private float currentSpawnInterval; // Intervalo actual de spawn
+    private float decreaseTimer; // Temporizador para reducir el intervalo
+
     public Vector2 spawnMin = new Vector2(-10, -10); // Mínimos del rango de spawn
     public Vector2 spawnMax = new Vector2(10, 10); // Máximos del rango de spawn
 
@@ -27,7 +34,9 @@ public class EndlessLevel : MonoBehaviour
 
     void Start()
     {
-        spawnTimer = spawnInterval;
+        currentSpawnInterval = spawnIntervalMax;
+        spawnTimer = currentSpawnInterval;
+        decreaseTimer = decreaseInterval;
 
         // Asegúrate de que el Canvas del menú de pausa esté desactivado al principio
         if (pauseMenuCanvas != null)
@@ -46,7 +55,15 @@ public class EndlessLevel : MonoBehaviour
         // Mostrar el tiempo transcurrido en el formato deseado (en segundos)
         if (timeText != null)
         {
-            timeText.text = "Tiempo Vivo:  " + Mathf.FloorToInt(elapsedTime).ToString() + "s";
+            timeText.text = Mathf.FloorToInt(elapsedTime).ToString() + "s";
+        }
+
+        // Temporizador para reducir el intervalo de generación
+        decreaseTimer -= Time.deltaTime;
+        if (decreaseTimer <= 0)
+        {
+            DecreaseSpawnInterval();
+            decreaseTimer = decreaseInterval;
         }
 
         // Generar enemigos en intervalos
@@ -54,7 +71,7 @@ public class EndlessLevel : MonoBehaviour
         if (spawnTimer <= 0)
         {
             SpawnEnemy();
-            spawnTimer = spawnInterval;
+            spawnTimer = currentSpawnInterval;
         }
 
         // Actualizar el texto del contador de enemigos
@@ -70,6 +87,15 @@ public class EndlessLevel : MonoBehaviour
         }
     }
 
+    void DecreaseSpawnInterval()
+    {
+        if (currentSpawnInterval > spawnIntervalMin)
+        {
+            currentSpawnInterval = Mathf.Max(currentSpawnInterval - spawnIntervalDecrease, spawnIntervalMin);
+            Debug.Log($"Nuevo intervalo de spawn: {currentSpawnInterval}s");
+        }
+    }
+
     void SpawnEnemy()
     {
         if (enemies.Length == 0) return;
@@ -82,7 +108,6 @@ public class EndlessLevel : MonoBehaviour
         // Buscar una posición válida que no esté a menos de 5 unidades del jugador
         do
         {
-            Debug.Log("Posicion de Spawn correcta");
             float randomX = Random.Range(spawnMin.x, spawnMax.x);
             float randomY = Random.Range(spawnMin.y, spawnMax.y);
             spawnPosition = new Vector2(randomX, randomY);
@@ -215,7 +240,7 @@ public class EndlessLevel : MonoBehaviour
 
         // Reiniciar el temporizador y las variables relacionadas con el juego
         elapsedTime = 0f; // Reiniciar el tiempo transcurrido
-        spawnTimer = spawnInterval; // Reiniciar el temporizador de spawn
+        spawnTimer = currentSpawnInterval; // Reiniciar el temporizador de spawn
 
         // Resetear la posición del jugador (si es necesario)
         if (playerTransform != null)

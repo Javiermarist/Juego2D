@@ -172,7 +172,7 @@ MonoBehaviour:
   attackPoint: {fileID: 7761779449994983362}
   deathAnimation: {fileID: 7400000, guid: 4d7eda0ae2ab73641b23c780d65d884a, type: 2}
   attackInterval: 1
-  attackDuration: 2
+  attackDuration: 3
   projectileSpeed: 7
   damage: 1
   lifePrefab: {fileID: 9065574396761068008, guid: 6eae672c5929910458701e7a7188f4a1,
