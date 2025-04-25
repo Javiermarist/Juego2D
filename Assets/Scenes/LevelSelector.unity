@@ -1759,8 +1759,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level1SceneName: Level1
-  level2SceneName: Level1
-  level3SceneName: Level1
+  level2SceneName: Level2
+  level3SceneName: Endless
   levelSelectorSceneName: LevelSelector
   optionsSceneName: Options
   guideSceneName: Guide
@@ -6600,7 +6600,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1616148918}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
         m_MethodName: MainMenu
         m_Mode: 1
